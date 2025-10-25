@@ -1,48 +1,57 @@
 /**
- * Vietnamese Republic E-Book Theme
- * Colors inspired by the Vietnamese Republic flag and traditional Vietnamese aesthetics
- * Yellow (#FFCD00) and Red (#DA291C) are the primary colors from the flag
+ * Vietnamese Republic E-Book Theme - Cold Color Palette
+ * Colors inspired by the Vietnamese Republic flag with a cooler, more contemporary feel
+ * Yellow (#FFCD00) and Red (#DA291C) preserved as accent colors from the flag
+ * Base palette shifted to cool blues, grays, and muted tones
  */
 
 import { Platform } from 'react-native';
 
-// Vietnamese Republic flag colors
+// Vietnamese Republic flag colors (preserved)
 const vnrYellow = '#FFCD00'; // Vietnamese yellow
 const vnrRed = '#DA291C'; // Vietnamese red
-const vnrGold = '#D4AF37'; // Traditional gold accent
-const vnrBrown = '#8B4513'; // Aged paper brown
+
+// Cool color palette
+const coolSlate = '#475569'; // Cool slate gray
+const coolBlue = '#1e3a5f'; // Deep cool blue
+const iceBlue = '#e0f2fe'; // Light ice blue
+const steelGray = '#64748b'; // Steel gray
+const frostWhite = '#f8fafc'; // Frost white
+const deepNavy = '#0f172a'; // Deep navy
+const mistGray = '#cbd5e1'; // Mist gray
+const glacierBlue = '#bae6fd'; // Glacier blue
 
 const tintColorLight = vnrRed;
 const tintColorDark = vnrYellow;
 
 export const Colors = {
   light: {
-    text: '#2C1810', // Dark brown for text (like ink on paper)
-    background: '#FFF8E7', // Cream/aged paper color
+    text: '#1e293b', // Cool dark slate
+    background: '#f1f5f9', // Cool light gray
     tint: tintColorLight,
-    icon: '#8B4513',
-    tabIconDefault: '#A0522D',
+    icon: coolSlate,
+    tabIconDefault: steelGray,
     tabIconSelected: tintColorLight,
-    pageBackground: '#FFFEF0', // Slightly lighter page color
-    cardBackground: '#F5E6D3', // Card/section background
+    pageBackground: frostWhite, // Frost white for pages
+    cardBackground: '#ffffff', // Pure white cards
     accent: vnrYellow,
-    accentSecondary: vnrGold,
-    border: '#D4A76A',
-    shadow: 'rgba(139, 69, 19, 0.2)',
+    accentSecondary: glacierBlue,
+    border: mistGray,
+    shadow: 'rgba(71, 85, 105, 0.15)',
   },
   dark: {
-    text: '#F5E6D3', // Light cream text
-    background: '#1A0F0A', // Very dark brown
+    text: '#e2e8f0', // Cool light slate
+    background: '#0f172a', // Deep navy background
     tint: tintColorDark,
-    icon: '#D4AF37',
-    tabIconDefault: '#A0826D',
+    icon: mistGray,
+    tabIconDefault: steelGray,
     tabIconSelected: tintColorDark,
-    pageBackground: '#2C1810', // Dark brown page
-    cardBackground: '#3D2517', // Slightly lighter card
+    pageBackground: '#1e293b', // Cool dark slate page
+    cardBackground: '#334155', // Slate card background
     accent: vnrRed,
-    accentSecondary: vnrYellow,
-    border: '#5C4033',
-    shadow: 'rgba(255, 205, 0, 0.3)',
+    accentSecondary: iceBlue,
+    border: '#475569',
+    shadow: 'rgba(255, 205, 0, 0.25)',
   },
 };
 

@@ -1,31 +1,101 @@
-// VNR202_Group3/data/library.ts
-import type { LibraryBook } from '@/types/library';
+import type { LibraryBook, MediaItem } from '@/types/library';
 
 // A default background image used as a placeholder.
-// This can be replaced with actual historical images for each chapter.
 const defaultBackground = require('@/assets/images/partial-react-logo.png');
 
+// --- MEDIA LIBRARY FOR CHAPTER 2 ---
+// This object contains all the interactive media for the 1961-1965 chapter.
+// The keys (e.g., 'congress-iii') are used in the chapter's content to create clickable links.
+const chapter2Media: Record<string, MediaItem> = {
+  'congress-iii': {
+    id: 'congress-hall',
+    type: 'gallery',
+    title: 'Đại hội Đảng lần thứ III',
+    description: 'Hình ảnh từ Đại hội đại biểu toàn quốc lần thứ III của Đảng, tháng 9/1960.',
+    images: [
+      require('@/assets/images/partial-react-logo.png'), // Placeholder for Hội trường
+      require('@/assets/images/react-logo.png'), // Placeholder for HCM Speech
+    ],
+    caption: '525 đại biểu chính thức và 51 đại biểu dự khuyết đã tham dự sự kiện lịch sử này.',
+  },
+  'strategic-hamlet': {
+    id: 'hamlet-map',
+    type: 'gallery',
+    title: 'Ấp chiến lược',
+    description: 'Chương trình "ấp chiến lược" là xương sống của chiến lược "chiến tranh đặc biệt" do Mỹ-nguỵ đề ra.',
+    images: [
+      require('@/assets/images/partial-react-logo.png'), // Placeholder for map
+      require('@/assets/images/react-logo.png'), // Placeholder for people breaking the hamlet
+    ],
+    caption: 'Dù dự kiến xây dựng 17.000 ấp, nhưng chỉ 1/3 được hoàn thành do sự phản kháng mạnh mẽ của nhân dân.',
+  },
+  'ap-bac': {
+    id: 'ap-bac-battle',
+    type: 'image',
+    title: 'Chiến thắng Ấp Bắc',
+    description: 'Trận Ấp Bắc tại Mỹ Tho ngày 2/1/1963 là một thắng lợi quân sự vang dội, chứng tỏ khả năng đánh bại các chiến thuật hiện đại của địch.',
+    images: [require('@/assets/images/react-logo.png')],
+    caption: 'Chiến thắng này đã dấy lên phong trào "Thi đua Ấp Bắc, giết giặc lập công" trên toàn miền Nam.',
+  },
+  'kennedy': {
+    id: 'kennedy-strategy',
+    type: 'image',
+    title: 'Tổng thống Kennedy',
+    description: 'Tổng thống John F. Kennedy là người đã đề ra chiến lược "chiến tranh đặc biệt" tại Việt Nam.',
+    images: [require('@/assets/images/partial-react-logo.png')],
+    caption: 'Công thức của chiến lược là: Quân nguỵ + vũ khí Mỹ + cố vấn Mỹ.',
+  },
+  'diem-nhu': {
+    id: 'coup-1963',
+    type: 'image',
+    title: 'Đảo chính 1/11/1963',
+    description: 'Cuộc đảo chính do Mỹ hậu thuẫn đã lật đổ chế độ của anh em Ngô Đình Diệm và Ngô Đình Nhu.',
+    images: [require('@/assets/images/react-logo.png')],
+    caption: 'Sau đảo chính, tình hình chính trị ở miền Nam Việt Nam càng trở nên bất ổn.',
+  },
+  'binh-gia': {
+    id: 'binh-gia-victory',
+    type: 'image',
+    title: 'Chiến thắng Bình Giã',
+    description: 'Trận chiến diễn ra tại Bình Giã, Bà Rịa vào tháng 12/1964.',
+    images: [require('@/assets/images/react-logo.png')],
+    caption: 'Một trong những chiến thắng quan trọng góp phần làm phá sản "chiến tranh đặc biệt".',
+  },
+  'ba-gia': {
+    id: 'ba-gia-victory',
+    type: 'image',
+    title: 'Chiến thắng Ba Gia',
+    description: 'Trận chiến tại Ba Gia, Quảng Ngãi vào tháng 6/1965.',
+    images: [require('@/assets/images/partial-react-logo.png')],
+    caption: 'Tiếp tục khẳng định sự thất bại không thể tránh khỏi của chiến lược chiến tranh của địch.',
+  },
+  'dong-xoai': {
+    id: 'dong-xoai-victory',
+    type: 'image',
+    title: 'Chiến thắng Đồng Xoài',
+    description: 'Trận Đồng Xoài, Bình Phước vào tháng 6/1965 là một trong những đòn quyết định.',
+    images: [require('@/assets/images/react-logo.png')],
+    caption: 'Thắng lợi này đã góp phần làm phá sản hoàn toàn chiến lược "chiến tranh đặc biệt", buộc Mỹ phải leo thang.',
+  },
+};
+
+
 export const libraryBooks: LibraryBook[] = [
-  // This single LibraryBook object contains the entire historical text you provided.
-  // The content is structured into distinct chapters based on the main sections of the source text.
   {
-    // --- BOOK METADATA ---
-    // This section defines the overall book that will be displayed in the library.
     id: 'history-vnr-1954-1975',
     title: 'Lãnh Đạo Cách Mạng (1954 - 1975)',
     author: 'Lịch sử Đảng Cộng sản Việt Nam',
     year: '1954-1975',
     category: 'history',
-    progress: 0, // Initial progress is set to 0 for a new book.
+    progress: 0,
     highlightTag: 'Toàn Tập',
     synopsis: 'Tổng quan về sự lãnh đạo của Đảng trong công cuộc xây dựng CNXH ở miền Bắc và kháng chiến chống Mỹ, giải phóng miền Nam, thống nhất đất nước.',
     featuredQuote: 'Chống Mỹ cứu nước là nhiệm vụ thiêng liêng nhất của cả dân tộc từ Nam chí Bắc.',
-    coverColor: '#DA291C', // Inspired by the national flag color.
-    accentColor: '#FFCD00', // Inspired by the national flag color.
-    readingTimeMinutes: 120, // Estimated total reading time in minutes.
+    coverColor: '#DA291C',
+    accentColor: '#FFCD00',
+    readingTimeMinutes: 120,
     chapters: [
-      // --- CHAPTER 1: 1954 - 1960 ---
-      // Corresponds to section II.1 in the source text.
+      // Chapter 1 remains unchanged.
       {
         id: 'chapter-1954-1960',
         title: 'Giai đoạn 1954 - 1960',
@@ -63,16 +133,19 @@ Phong trào "Đồng khởi", bắt đầu từ Bến Tre ngày 17/1/1960, đã 
 
 Thắng lợi này dẫn đến sự ra đời của Mặt trận Dân tộc Giải phóng miền Nam Việt Nam vào ngày 20/12/1960 tại Tân Lập, Tây Ninh.`,
       },
-      // --- CHAPTER 2: 1961 - 1965 ---
-      // Corresponds to section II.2 in the source text.
+      // --- CHAPTER 2: 1961 - 1965 (MODIFIED CONTENT) ---
       {
         id: 'chapter-1961-1965',
         title: 'Giai đoạn 1961 - 1965',
         featuredQuote: 'Đại hội xây dựng chủ nghĩa xã hội ở miền Bắc và đấu tranh hòa bình thống nhất nước nhà.',
         backgroundImage: defaultBackground,
+        // The `media` property now holds the interactive elements for this chapter.
+        media: chapter2Media,
+        // The content now uses Markdown links to trigger media popups.
+        // e.g., [Text to display](media_key)
         content: `**Đại hội đại biểu toàn quốc lần thứ III của Đảng (9/1960)**
 
-Đại hội họp tháng 9/1960 với 525 đại biểu chính thức và 51 đại biểu dự khuyết. Chủ tịch Hồ Chí Minh nêu rõ: "Đại hội lần này là Đại hội xây dựng chủ nghĩa xã hội ở miền Bắc và đấu tranh hòa bình thống nhất nước nhà".
+Đại hội họp tháng 9/1960 với 525 đại biểu chính thức và 51 đại biểu dự khuyết. Chủ tịch Hồ Chí Minh nêu rõ: "[Đại hội lần này là Đại hội xây dựng chủ nghĩa xã hội ở miền Bắc và đấu tranh hòa bình thống nhất nước nhà](congress-iii)".
 
 **Đường lối chiến lược hai nhiệm vụ**
 
@@ -100,9 +173,9 @@ Phương hướng cơ bản:
 
 **Chiến lược "chiến tranh đặc biệt" của Mỹ**
 
-Tổng thống Kennedy đề ra chiến lược "chiến tranh đặc biệt": Quân nguỵ + vũ khí Mỹ + cố vấn Mỹ. Âm mưu tiêu diệt phong trào tiến công và nổi dậy ở miền Nam.
+Tổng thống [Kennedy](kennedy) đề ra chiến lược "chiến tranh đặc biệt": Quân nguỵ + vũ khí Mỹ + cố vấn Mỹ. Âm mưu tiêu diệt phong trào tiến công và nổi dậy ở miền Nam.
 
-Mỹ tăng cường bình định, lập ấp chiến lược để tách dân ra khỏi cách mạng. Dự kiến thành lập 17.000 ấp chiến lược, coi đây là chương trình xương sống.
+Mỹ tăng cường bình định, lập [ấp chiến lược](strategic-hamlet) để tách dân ra khỏi cách mạng. Dự kiến thành lập 17.000 [ấp chiến lược](strategic-hamlet), coi đây là chương trình xương sống.
 
 **Chủ trương của ta**
 
@@ -113,16 +186,15 @@ Tháng 1/1961 và tháng 2/1962, Bộ Chính trị ra chỉ thị về "Phương
 
 **Các chiến thắng vang dội**
 
-Chiến thắng Ấp Bắc (Mỹ Tho) ngày 2/1/1963 đã chứng minh sức mạnh và hiệu quả của đấu tranh vũ trang kết hợp chính trị và binh vận. Cả miền Nam dấy lên phong trào "Thi đua Ấp Bắc giết giặc lập công".
+[Chiến thắng Ấp Bắc](ap-bac) (Mỹ Tho) ngày 2/1/1963 đã chứng minh sức mạnh và hiệu quả của đấu tranh vũ trang kết hợp chính trị và binh vận. Cả miền Nam dấy lên phong trào "Thi đua Ấp Bắc giết giặc lập công".
 
-Phong trào phá ấp chiến lược diễn ra mạnh mẽ. Mỹ-nguỵ chỉ xây dựng được 1/3 trong số 17.000 ấp dự định.
+Phong trào phá [ấp chiến lược](strategic-hamlet) diễn ra mạnh mẽ. Mỹ-nguỵ chỉ xây dựng được 1/3 trong số 17.000 ấp dự định.
 
-Ngày 1/11/1963, Mỹ đảo chính lật đổ anh em Diệm-Nhu, nhưng tình hình chính trị miền Nam vẫn bất ổn.
+Ngày 1/11/1963, Mỹ đảo chính lật đổ anh em [Diệm-Nhu](diem-nhu), nhưng tình hình chính trị miền Nam vẫn bất ổn.
 
-Chiến thắng Bình Giã (Bà Rịa) tháng 12/1964, tiếp theo là các chiến thắng Ba Gia (Quảng Ngãi) và Đồng Xoài (Bình Phước) tháng 6/1965 đã làm phá sản hoàn toàn chiến lược "chiến tranh đặc biệt", buộc Mỹ phải chuyển sang "chiến tranh cục bộ".`,
+Chiến thắng [Bình Giã](binh-gia) (Bà Rịa) tháng 12/1964, tiếp theo là các chiến thắng [Ba Gia](ba-gia) (Quảng Ngãi) và [Đồng Xoài](dong-xoai) (Bình Phước) tháng 6/1965 đã làm phá sản hoàn toàn chiến lược "chiến tranh đặc biệt", buộc Mỹ phải chuyển sang "chiến tranh cục bộ".`,
       },
-      // --- CHAPTER 3: 1965 - 1975 ---
-      // Corresponds to section II.3 in the source text.
+      // Other chapters remain unchanged.
       {
         id: 'chapter-1965-1975',
         title: 'Giai đoạn 1965 - 1975',
@@ -183,8 +255,6 @@ Ngày 30/4/1975, Sài Gòn được giải phóng hoàn toàn, chế độ ngu�
 - Biểu tượng chủ nghĩa anh hùng cách mạng và đại đoàn kết dân tộc
 - Cổ vũ phong trào giải phóng dân tộc thế giới, góp phần bảo vệ hòa bình`,
       },
-      // --- CHAPTER 4: LIÊN HỆ THỰC TIỄN ---
-      // Corresponds to the final section of the source text.
       {
         id: 'chapter-lessons',
         title: 'Bài học và Liên hệ thực tiễn',
