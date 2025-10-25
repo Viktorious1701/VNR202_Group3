@@ -1,13 +1,14 @@
-import { View, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { Colors } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { LibraryBook } from '@/types/library';
+import { Ionicons } from '@expo/vector-icons';
+import { Dimensions, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { Colors } from '@/constants/theme';
-import { Ionicons } from '@expo/vector-icons';
-import { LibraryBook } from '@/types/library';
 
 const { width } = Dimensions.get('window');
-const CARD_WIDTH = (width - 48) / 2; // 2 cards per row with padding
+const CARD_WIDTH = (width - 64) / 2; // Account for screen padding (16*2) + grid padding (12*2) + gap
+
 const CATEGORY_LABELS: Record<LibraryBook['category'], string> = {
   history: 'lịch sử',
   literature: 'văn học',

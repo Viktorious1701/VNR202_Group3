@@ -1,12 +1,12 @@
+import { Colors } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { LibraryBook } from '@/types/library';
+import { Ionicons } from '@expo/vector-icons';
 import type { ComponentProps } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { BookCard } from './book-card';
 import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
-import { BookCard } from './book-card';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { Colors } from '@/constants/theme';
-import { Ionicons } from '@expo/vector-icons';
-import { LibraryBook } from '@/types/library';
 
 interface BookShelfProps {
   title: string;

@@ -1,7 +1,7 @@
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
-import { ThemedText } from './themed-text';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Colors } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ThemedText } from './themed-text';
 
 interface HeritageBannerStat {
   value: string;

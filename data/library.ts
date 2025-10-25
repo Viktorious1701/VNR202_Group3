@@ -1,5 +1,8 @@
 import type { LibraryBook } from '@/types/library';
 
+// For now using placeholder - you can replace with actual Vietnamese heritage images
+const defaultBackground = require('@/assets/images/partial-react-logo.png');
+
 export const libraryBooks: LibraryBook[] = [
   {
     id: 'history-lsvnr',
@@ -19,6 +22,7 @@ export const libraryBooks: LibraryBook[] = [
         id: 'history-lsvnr-1',
         title: 'Khởi nguyên 1955',
         featuredQuote: 'Một nền cộng hòa ra đời từ cả quyết lẫn do dự.',
+        backgroundImage: defaultBackground,
         content: `Sau cuộc trưng cầu dân ý năm 1955, nền cộng hòa non trẻ bắt đầu định hình những cơ quan đầu tiên. Các phòng ban dân sự được tái cấu trúc với mục tiêu hiện đại hóa, song vẫn giữ nếp sống truyền thống của miền Nam. Những phiên họp kéo dài đến rạng sáng tại dinh Norodom đặt nền cho hệ thống hành chính mới.
 
 Trên các đại lộ Sài Gòn, sinh viên trường Hành chánh đi lại với tập hồ sơ dưới tay, thuộc lòng những giáo trình mới phiên dịch từ tiếng Pháp. Họ được kỳ vọng trở thành lớp cán bộ kiến tạo tương lai, dù chính họ vẫn đang học cách cân bằng giữa khuôn mẫu phương Tây và tâm thức làng xã.
@@ -29,6 +33,7 @@ Bên ngoài đô thị, chương trình ấp chiến lược thử nghiệm tạ
         id: 'history-lsvnr-2',
         title: 'Hạ tầng và nhịp thở đô thị',
         featuredQuote: 'Nhịp xe lam, mùi xăng mới và tiếng hát trên vỉa hè cùng viết nên bức tranh đô thị.',
+        backgroundImage: defaultBackground,
         content: `Những cây cầu bê tông nối khu trung tâm với vùng Chợ Lớn hoàn thành trong thời gian kỷ lục. Đường Nguyễn Huệ khoác lên đèn điện mới, rạp hát Đại Nam thay áo vàng son với bảng hiệu đèn đỏ rực rỡ. Chính quyền xem hạ tầng là tuyên ngôn của sự tiến bộ.
 
 Sài Gòn cũng trở thành phòng thí nghiệm văn hóa đại chúng, khi các đài phát thanh tư nhân được cấp phép. Mỗi buổi tối, người dân vặn radio nghe bản tin và những ca khúc mới nhất, vừa nghe vừa ghi chú bằng bút mực tím.
@@ -39,6 +44,7 @@ Trong khi đó, các tỉnh miền Trung tranh thủ nguồn ngân sách để m
         id: 'history-lsvnr-3',
         title: 'Ngoại giao và thử thách',
         featuredQuote: 'Mỗi chuyến công du là bài toán giữa niềm tin đồng minh và tiếng nói người dân.',
+        backgroundImage: defaultBackground,
         content: `Từ cuối thập niên 1960, sổ tay ngoại giao dày lên với lịch trình tiếp đón phái đoàn quốc tế. Cờ vàng ba sọc đỏ tung bay trước các tòa đại sứ mới mở, đánh dấu vị thế của Sài Gòn trong bản đồ chiến lược Đông Nam Á.
 
 Tuy vậy, những cuộc biểu tình sinh viên phản đối tham nhũng cũng xuất hiện bên ngoài Quốc hội. Chính quyền phải tổ chức các buổi tiếp xúc cử tri, lắng nghe tiếng nói của các hội đoàn nghề nghiệp, giáo phận và cộng đồng di cư.
@@ -63,6 +69,7 @@ Khi hiệp định Paris được ký, dư âm chiến tranh vẫn len lỏi tro
       {
         id: 'culture-saigon-1',
         title: 'Những buổi sáng ở Chợ Bến Thành',
+        backgroundImage: defaultBackground,
         content: `Tiếng mời chào của các cô bán vải hòa với mùi phở bò bốc khói tại cửa tây. Những chiếc xe Vespa dừng vội để người mua hoa bưng bó cúc vàng cho kịp buổi họp mặt gia đình. Chợ Bến Thành không chỉ là nơi giao thương mà còn là sân khấu của thời trang miền Nam với áo dài may đo ngay tại sạp.
 
 Tác giả ghi chép chi tiết cách người mua sắm trả giá bằng giọng nhỏ nhẹ, lưu giữ nét lịch thiệp giữa chốn đông người. Dù trời tháng Năm nóng rực, mọi người vẫn giữ nụ cười hiền và câu "thưa cô" trước khi rời quầy hàng.
@@ -72,6 +79,7 @@ Sau 9 giờ sáng, những xe hàng thực phẩm lên đường tới Gia Đị
       {
         id: 'culture-saigon-2',
         title: 'Ánh đèn tối thứ bảy',
+        backgroundImage: defaultBackground,
         content: `Đến tối, đại lộ Lê Lợi lung linh với biển hiệu neon của các rạp cine. Rạp Thống Nhất trình chiếu những bộ phim mới nhất từ Hồng Kông, trong khi rạp Rex giới thiệu các buổi hòa nhạc phòng trà. Người trẻ hẹn nhau uống cà phê sữa đá, bình luận về bản nhạc mới vừa phát trên đài Mẹ Việt Nam.
 
 Trong không khí ấy, các nhà thiết kế áo dài thử nghiệm chất liệu ren và taffeta. Từng đường kim, mũi chỉ ghi dấu sự hội nhập văn hóa mà vẫn giữ dáng vẻ dịu dàng của Sài Gòn.
@@ -81,6 +89,7 @@ Tác giả kết luận rằng Sài Gòn ban đêm là bức tranh đa sắc, n�
       {
         id: 'culture-saigon-3',
         title: 'Những con hẻm kể chuyện',
+        backgroundImage: defaultBackground,
         content: `Giữa khu trung tâm hoa lệ, những con hẻm nhỏ vẫn giữ được nhịp sống bình dị. Mỗi sáng, các bà cụ bày ghế nhựa, pha ấm trà mạn và kể chuyện gia đình cho hàng xóm. Tối đến, trẻ nhỏ chơi đá dĩa, còn người lớn kê bàn đánh cờ tướng.
 
 Tác giả ghi lại những câu chuyện về gia đình di cư từ miền Bắc, mang theo món bánh cốm, bánh gai rồi biến tấu theo khẩu vị miền Nam. Con hẻm vì vậy trở thành kho ký ức tập thể, nơi lịch sử được kể bằng giọng kể thân tình.

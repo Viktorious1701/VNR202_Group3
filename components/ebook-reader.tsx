@@ -1,13 +1,14 @@
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { ImageBackground, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+
+import { Colors } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useReaderPreferences, type ReaderThemeKey } from '@/hooks/use-reader-preferences';
+import { LibraryBook } from '@/types/library';
 import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { Colors } from '@/constants/theme';
-import { Ionicons } from '@expo/vector-icons';
-import { LibraryBook } from '@/types/library';
-
-type ReaderThemeKey = 'classic' | 'sepia' | 'night';
 
 interface ReaderPalette {
   pageBackground: string;
@@ -15,26 +16,25 @@ interface ReaderPalette {
   accent: string;
   border: string;
   shadow: string;
-}
-
-interface EBookReaderProps {
-  book: LibraryBook;
-  onChapterChange?: (chapterIndex: number) => void;
-  onReaderThemeChange?: (theme: ReaderThemeKey) => void;
+  overlayColor: string;
+  overlayOpacity: number;
+  textShadow: string;
 }
 
 const MIN_FONT_SIZE = 14;
 const MAX_FONT_SIZE = 26;
+const BASE_WORDS_PER_PAGE = 190;
+const WORDS_PER_PAGE_MIN = 90;
+const FONT_SIZE_ADJUSTMENT = 9;
 
-const paginateContent = (content: string, fontSize: number) => {
+const paginateContent = (content: string, fontSize: number): string[] => {
   const cleanContent = content.replace(/\s+/g, ' ').trim();
   if (!cleanContent) {
     return [''];
   }
 
-  const baseWordsPerPage = 190;
-  const adjustment = Math.round((fontSize - 16) * 9);
-  const wordsPerPage = Math.max(90, baseWordsPerPage - adjustment);
+  const adjustment = Math.round((fontSize - 16) * FONT_SIZE_ADJUSTMENT);
+  const wordsPerPage = Math.max(WORDS_PER_PAGE_MIN, BASE_WORDS_PER_PAGE - adjustment);
 
   const words = cleanContent.split(' ');
   const pages: string[] = [];
@@ -55,11 +55,17 @@ const paginateContent = (content: string, fontSize: number) => {
   return pages.length > 0 ? pages : [''];
 };
 
-export function EBookReader({ book, onChapterChange, onReaderThemeChange }: EBookReaderProps) {
+interface EBookReaderProps {
+  book: LibraryBook;
+  onChapterChange?: (chapterIndex: number) => void;
+}
+
+export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
+  const { readerTheme, fontSize } = useReaderPreferences();
 
-  const readerPalettes: Record<ReaderThemeKey, ReaderPalette> = useMemo(
+  const readerPalettes = useMemo<Record<ReaderThemeKey, ReaderPalette>>(
     () => ({
       classic: {
         pageBackground: colors.pageBackground,
@@ -67,6 +73,9 @@ export function EBookReader({ book, onChapterChange, onReaderThemeChange }: EBoo
         accent: colors.tint,
         border: colors.border,
         shadow: colors.shadow,
+        overlayColor: colorScheme === 'dark' ? 'rgba(0, 0, 0, 0.55)' : 'rgba(255, 255, 255, 0.75)',
+        overlayOpacity: 0.85,
+        textShadow: colorScheme === 'dark' ? 'rgba(0, 0, 0, 0.9)' : 'rgba(255, 255, 255, 0.9)',
       },
       sepia: {
         pageBackground: '#F3E7C9',
@@ -74,20 +83,24 @@ export function EBookReader({ book, onChapterChange, onReaderThemeChange }: EBoo
         accent: '#C6862D',
         border: '#D9C29A',
         shadow: 'rgba(105, 74, 40, 0.25)',
+        overlayColor: 'rgba(243, 231, 201, 0.82)',
+        overlayOpacity: 0.88,
+        textShadow: 'rgba(243, 231, 201, 0.95)',
       },
       night: {
         pageBackground: '#1B1B1B',
         textColor: '#F1E6D3',
         accent: '#FFCD00',
-        border: '#333',
+        border: '#333333',
         shadow: 'rgba(0, 0, 0, 0.6)',
+        overlayColor: 'rgba(27, 27, 27, 0.75)',
+        overlayOpacity: 0.9,
+        textShadow: 'rgba(0, 0, 0, 0.95)',
       },
     }),
-    [colors],
+    [colors, colorScheme],
   );
 
-  const [fontSize, setFontSize] = useState(18);
-  const [readerTheme, setReaderTheme] = useState<ReaderThemeKey>('classic');
   const [chapterIndex, setChapterIndex] = useState(0);
   const [pageIndex, setPageIndex] = useState(0);
 
@@ -114,10 +127,6 @@ export function EBookReader({ book, onChapterChange, onReaderThemeChange }: EBoo
   useEffect(() => {
     onChapterChange?.(chapterIndex);
   }, [chapterIndex, onChapterChange]);
-
-  useEffect(() => {
-    onReaderThemeChange?.(readerTheme);
-  }, [readerTheme, onReaderThemeChange]);
 
   const appliedPalette = readerPalettes[readerTheme];
 
@@ -147,33 +156,13 @@ export function EBookReader({ book, onChapterChange, onReaderThemeChange }: EBoo
     }
   }, [pageIndex, chapterIndex, chapterPages]);
 
-  const handleFontDecrease = () => setFontSize((value) => Math.max(MIN_FONT_SIZE, value - 2));
-  const handleFontIncrease = () => setFontSize((value) => Math.min(MAX_FONT_SIZE, value + 2));
-
   return (
     <ThemedView style={styles.container}>
-      <View style={[styles.header, { borderBottomColor: colors.border }]}>
-        <View style={styles.headerLeft}>
-          <ThemedText type="title" style={styles.bookTitle}>{book.title}</ThemedText>
-          <ThemedText style={[styles.author, { color: colors.icon }]}>
-            {book.author} • {book.year ?? 'N/A'}
-          </ThemedText>
-        </View>
-        <View style={styles.headerControls}>
-          <TouchableOpacity onPress={handleFontDecrease} style={[styles.controlButton, { backgroundColor: colors.cardBackground }]}>
-            <ThemedText style={styles.controlText}>A-</ThemedText>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleFontIncrease} style={[styles.controlButton, { backgroundColor: colors.cardBackground }]}>
-            <ThemedText style={styles.controlText}>A+</ThemedText>
-          </TouchableOpacity>
-        </View>
-      </View>
-
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.chapterPills}
-        style={styles.chapterPillsWrapper}
+        style={[styles.chapterPillsWrapper, { borderBottomColor: colors.border }]}
       >
         {book.chapters.map((chapter, index) => {
           const isActive = index === chapterIndex;
@@ -203,79 +192,88 @@ export function EBookReader({ book, onChapterChange, onReaderThemeChange }: EBoo
       </ScrollView>
 
       <ScrollView style={styles.contentContainer} contentContainerStyle={styles.contentInner}>
-        <View
-          style={[
-            styles.page,
-            {
-              backgroundColor: appliedPalette.pageBackground,
-              shadowColor: appliedPalette.shadow,
-              borderColor: appliedPalette.border,
-            },
-          ]}
+        <ImageBackground
+          source={currentChapter.backgroundImage || require('@/assets/images/react-logo.png')}
+          style={styles.pageImageBackground}
+          imageStyle={styles.pageImage}
+          resizeMode="cover"
         >
-          <View style={[styles.cornerDecoration, styles.topLeftCorner, { borderColor: appliedPalette.accent }]} />
-          <View style={[styles.cornerDecoration, styles.topRightCorner, { borderColor: appliedPalette.accent }]} />
-
-          <View style={styles.pageHeader}>
-            <ThemedText style={[styles.chapterTitle, { color: appliedPalette.accent }]}>
-              {currentChapter.title}
-            </ThemedText>
-            <ThemedText style={[styles.pageIndicator, { color: appliedPalette.accent }]}>
-              Trang {globalPageIndex}/{totalPages}
-            </ThemedText>
-          </View>
-
-          <ThemedText
-            style={[styles.content, { fontSize, lineHeight: fontSize * 1.7 }]}
-            lightColor={appliedPalette.textColor}
-            darkColor={appliedPalette.textColor}
+          <LinearGradient
+            colors={[
+              appliedPalette.overlayColor,
+              appliedPalette.overlayColor,
+            ]}
+            style={styles.gradientOverlay}
           >
-            {currentPageContent}
-          </ThemedText>
-
-          {(currentChapter.featuredQuote || book.featuredQuote) && (
-            <View style={[styles.quoteBox, { borderColor: appliedPalette.accent }]}>
-              <Ionicons name="sparkles" size={16} color={appliedPalette.accent} />
-              <ThemedText
-                style={[styles.quoteText, { color: appliedPalette.accent }]}
-                numberOfLines={4}
-              >
-                “{currentChapter.featuredQuote ?? book.featuredQuote}”
-              </ThemedText>
-            </View>
-          )}
-
-          <View style={[styles.cornerDecoration, styles.bottomLeftCorner, { borderColor: appliedPalette.accent }]} />
-          <View style={[styles.cornerDecoration, styles.bottomRightCorner, { borderColor: appliedPalette.accent }]} />
-        </View>
-      </ScrollView>
-
-      <View style={[styles.themeSelector, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}>
-        {(Object.keys(readerPalettes) as ReaderThemeKey[]).map((key) => {
-          const palette = readerPalettes[key];
-          const isActive = readerTheme === key;
-          return (
-            <TouchableOpacity
-              key={key}
-              onPress={() => setReaderTheme(key)}
+            <View
               style={[
-                styles.themeOption,
+                styles.page,
                 {
-                  backgroundColor: palette.pageBackground,
-                  borderColor: isActive ? palette.accent : palette.border,
+                  backgroundColor: 'transparent',
+                  shadowColor: appliedPalette.shadow,
+                  borderColor: 'transparent',
                 },
               ]}
             >
-              <View style={[styles.themeSwatch, { backgroundColor: palette.accent }]} />
+              <View style={styles.pageHeader}>
+                <View style={[styles.chapterTitleBadge, { backgroundColor: appliedPalette.accent + '22' }]}>
+                  <ThemedText 
+                    style={[
+                      styles.chapterTitle, 
+                      { 
+                        color: appliedPalette.accent,
+                        textShadowColor: appliedPalette.textShadow,
+                        textShadowOffset: { width: 0, height: 1 },
+                        textShadowRadius: 3,
+                      }
+                    ]}
+                  >
+                    {currentChapter.title}
+                  </ThemedText>
+                </View>
+              </View>
+
               <ThemedText
-                style={[styles.themeLabel, { color: isActive ? palette.accent : colors.icon }]}
+                style={[
+                  styles.content, 
+                  { 
+                    fontSize, 
+                    lineHeight: fontSize * 1.7,
+                    color: appliedPalette.textColor,
+                    textShadowColor: appliedPalette.textShadow,
+                    textShadowOffset: { width: 0, height: 1 },
+                    textShadowRadius: 4,
+                  }
+                ]}
+                lightColor={appliedPalette.textColor}
+                darkColor={appliedPalette.textColor}
               >
-                {key === 'classic' ? 'Cổ điển' : key === 'sepia' ? 'Sepia' : 'Đêm'}
+                {currentPageContent}
               </ThemedText>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
+
+              {(currentChapter.featuredQuote || book.featuredQuote) && (
+                <View style={[styles.quoteBox, { 
+                  borderColor: appliedPalette.accent,
+                  backgroundColor: appliedPalette.pageBackground + 'CC'
+                }]}>
+                  <Ionicons name="sparkles" size={16} color={appliedPalette.accent} />
+                  <ThemedText
+                    style={[styles.quoteText, { 
+                      color: appliedPalette.accent,
+                      textShadowColor: appliedPalette.textShadow,
+                      textShadowOffset: { width: 0, height: 1 },
+                      textShadowRadius: 2,
+                    }]}
+                    numberOfLines={4}
+                  >
+                    "{currentChapter.featuredQuote ?? book.featuredQuote}"
+                  </ThemedText>
+                </View>
+              )}
+            </View>
+          </LinearGradient>
+        </ImageBackground>
+      </ScrollView>
 
       <View style={[styles.footer, { borderTopColor: colors.border, backgroundColor: colors.cardBackground }]}>
         <TouchableOpacity onPress={goToPrevious} style={styles.navButton}>
@@ -305,52 +303,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
-    paddingHorizontal: 16,
-    paddingVertical: 20,
-    borderBottomWidth: 2,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    gap: 16,
-  },
-  headerLeft: {
-    flex: 1,
-  },
-  bookTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-  },
-  author: {
-    marginTop: 4,
-    fontSize: 13,
-  },
-  headerControls: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  controlButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 6,
-  },
-  controlText: {
-    fontWeight: '600',
-  },
   chapterPillsWrapper: {
-    maxHeight: 56,
+    borderBottomWidth: 1,
+    flexGrow: 0,
   },
   chapterPills: {
     paddingHorizontal: 16,
-    paddingVertical: 12,
-    gap: 12,
+    paddingVertical: 8,
+    gap: 8,
+    flexGrow: 0,
   },
   chapterPill: {
-    paddingHorizontal: 18,
-    paddingVertical: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
     borderRadius: 999,
-    borderWidth: 1,
-    marginRight: 12,
+    borderWidth: 1.5,
   },
   chapterPillText: {
     fontSize: 13,
@@ -360,54 +327,42 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentInner: {
-    padding: 16,
-    paddingBottom: 24,
+    paddingHorizontal: 16,
+    paddingTop: 20,
+    paddingBottom: 28,
+  },
+  pageImageBackground: {
+    borderRadius: 18,
+    overflow: 'hidden',
+    minHeight: 600,
+  },
+  pageImage: {
+    borderRadius: 18,
+  },
+  gradientOverlay: {
+    flex: 1,
+    minHeight: 600,
   },
   page: {
-    padding: 24,
-    borderRadius: 12,
+    paddingHorizontal: 24,
+    paddingVertical: 28,
+    borderRadius: 18,
     borderWidth: 1,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 18,
-    elevation: 6,
-    position: 'relative',
-  },
-  cornerDecoration: {
-    position: 'absolute',
-    width: 24,
-    height: 24,
-    borderWidth: 2,
-  },
-  topLeftCorner: {
-    top: 10,
-    left: 10,
-    borderRightWidth: 0,
-    borderBottomWidth: 0,
-  },
-  topRightCorner: {
-    top: 10,
-    right: 10,
-    borderLeftWidth: 0,
-    borderBottomWidth: 0,
-  },
-  bottomLeftCorner: {
-    bottom: 10,
-    left: 10,
-    borderRightWidth: 0,
-    borderTopWidth: 0,
-  },
-  bottomRightCorner: {
-    bottom: 10,
-    right: 10,
-    borderLeftWidth: 0,
-    borderTopWidth: 0,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.18,
+    shadowRadius: 12,
+    elevation: 3,
   },
   pageHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    gap: 6,
+    marginBottom: 20,
+  },
+  chapterTitleBadge: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 12,
   },
   chapterTitle: {
     fontSize: 16,
@@ -415,13 +370,9 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
-  pageIndicator: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
   content: {
     textAlign: 'justify',
-    marginBottom: 24,
+    marginBottom: 20,
   },
   quoteBox: {
     borderWidth: 1,
@@ -430,47 +381,55 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: 8,
+    marginTop: 8,
   },
   quoteText: {
     fontSize: 13,
     fontStyle: 'italic',
     flex: 1,
   },
-  themeSelector: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  toolbar: {
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderTopWidth: 1,
     borderBottomWidth: 1,
-    marginHorizontal: 16,
-    borderRadius: 16,
+    gap: 12,
   },
-  themeOption: {
-    flex: 1,
-    marginHorizontal: 6,
-    borderRadius: 12,
-    borderWidth: 1,
+  themeChipScroll: {
+    flexGrow: 0,
+  },
+  themeChipRow: {
+    flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
-    gap: 8,
+    gap: 10,
+    paddingRight: 4,
   },
-  themeSwatch: {
-    width: 32,
-    height: 6,
-    borderRadius: 16,
+  themeChip: {
+    borderWidth: 1,
+    borderRadius: 999,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
   },
-  themeLabel: {
+  themeChipLabel: {
     fontSize: 12,
     fontWeight: '600',
+    letterSpacing: 0.3,
+  },
+  toolbarStatus: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  toolbarStatusText: {
+    fontSize: 12,
+    fontWeight: '500',
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingVertical: 20,
-    borderTopWidth: 2,
+    paddingVertical: 14,
+    borderTopWidth: 1,
   },
   navButton: {
     flexDirection: 'row',
@@ -483,10 +442,11 @@ const styles = StyleSheet.create({
   },
   progressWrapper: {
     flex: 1,
-    marginHorizontal: 16,
+    marginHorizontal: 12,
+    gap: 6,
   },
   progressBar: {
-    height: 6,
+    height: 5,
     borderRadius: 3,
     overflow: 'hidden',
   },
@@ -495,9 +455,9 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   progressText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '500',
     textAlign: 'center',
-    marginTop: 6,
+    marginTop: 2,
   },
 });

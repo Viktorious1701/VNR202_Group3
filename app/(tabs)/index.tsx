@@ -1,17 +1,18 @@
-import { useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, View, TouchableOpacity } from 'react-native';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
 import { BookShelf } from '@/components/book-shelf';
 import { EBookReader } from '@/components/ebook-reader';
 import { HeritageBanner } from '@/components/heritage-banner';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
 import { Colors } from '@/constants/theme';
-import { Ionicons } from '@expo/vector-icons';
-import type { LibraryBook } from '@/types/library';
 import { libraryBooks } from '@/data/library';
-
-type ReaderThemeKey = 'classic' | 'sepia' | 'night';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useReaderPreferences } from '@/hooks/use-reader-preferences';
+import type { LibraryBook } from '@/types/library';
+import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from 'expo-router';
+import { useEffect, useMemo, useState } from 'react';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface LibraryShelfConfig {
   id: string;
@@ -56,10 +57,21 @@ const archiveSpotlight = {
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
+  const insets = useSafeAreaInsets();
+  const navigation = useNavigation();
+  const { readerTheme, themeLabelMap } = useReaderPreferences();
   const [isReading, setIsReading] = useState(false);
   const [activeBookId, setActiveBookId] = useState<string | null>(null);
   const [activeChapterIndex, setActiveChapterIndex] = useState(0);
-  const [readerTheme, setReaderTheme] = useState<ReaderThemeKey>('classic');
+
+  // Hide/show tab bar based on reading state
+  useEffect(() => {
+    navigation.setOptions({
+      tabBarStyle: {
+        display: isReading ? 'none' : 'flex',
+      },
+    });
+  }, [isReading, navigation]);
 
   const highlightedBook = libraryBooks[0];
   const continueReading = useMemo(
@@ -88,7 +100,6 @@ export default function HomeScreen() {
   const handleBookPress = (book: LibraryBook) => {
     setActiveBookId(book.id);
     setActiveChapterIndex(0);
-    setReaderTheme('classic');
     setIsReading(true);
   };
 
@@ -100,22 +111,30 @@ export default function HomeScreen() {
   if (isReading && currentBook) {
     return (
       <ThemedView style={styles.container}>
-        <View style={[styles.readerHeader, { backgroundColor: colors.cardBackground, borderBottomColor: colors.border }]}>
+        <View
+          style={[
+            styles.readerHeader,
+            {
+              backgroundColor: colors.cardBackground,
+              borderBottomColor: colors.border,
+              paddingTop: insets.top + 12,
+            },
+          ]}
+        >
           <TouchableOpacity onPress={handleBackToLibrary} style={styles.readerBackButton}>
             <Ionicons name="arrow-back" size={22} color={colors.text} />
             <ThemedText style={styles.readerBackText}>Trở về thư viện</ThemedText>
           </TouchableOpacity>
           <View style={styles.readerMeta}>
             <ThemedText style={styles.readerBook}>{currentBook.title}</ThemedText>
-            <ThemedText style={[styles.readerMetaLine, { color: colors.icon }]}>
-              Chương {activeChapterIndex + 1}/{currentBook.chapters.length} • Chế độ {readerTheme === 'night' ? 'đêm' : readerTheme === 'sepia' ? 'sepia' : 'cổ điển'}
+            <ThemedText style={[styles.readerMetaLine, { color: colors.icon }]}> 
+              Chương {activeChapterIndex + 1}/{currentBook.chapters.length} • Chế độ {themeLabelMap[readerTheme]}
             </ThemedText>
           </View>
         </View>
         <EBookReader
           book={currentBook}
           onChapterChange={setActiveChapterIndex}
-          onReaderThemeChange={setReaderTheme}
         />
       </ThemedView>
     );
@@ -125,7 +144,7 @@ export default function HomeScreen() {
     <ThemedView style={styles.container}>
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 16 }]}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.content}>
@@ -357,7 +376,7 @@ const styles = StyleSheet.create({
   },
   readerHeader: {
     paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingBottom: 12,
     borderBottomWidth: 1,
     flexDirection: 'row',
     alignItems: 'center',

@@ -4,6 +4,7 @@ export interface LibraryChapter {
   content: string;
   featuredQuote?: string;
   estimatedReadingMinutes?: number;
+  backgroundImage?: any; // For chapter-specific background images
 }
 
 export interface LibraryBook {
