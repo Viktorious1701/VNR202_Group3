@@ -157,10 +157,11 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
   const globalPageIndex = pagesBefore + pageIndex + 1;
   const progressPercent = Math.round((globalPageIndex / totalPages) * 100);
 
+  // --- PROGRAMMATIC SCROLLING ---
+  // This effect listens for changes to the page or chapter and scrolls the view accordingly.
   useEffect(() => {
-    setPageIndex(0);
-    pageScrollViewRef.current?.scrollTo({ x: 0, animated: false });
-  }, [chapterIndex, fontSize]);
+    pageScrollViewRef.current?.scrollTo({ x: pageIndex * screenWidth, animated: true });
+  }, [pageIndex, chapterIndex]);
 
   useEffect(() => {
     onChapterChange?.(chapterIndex);
@@ -173,30 +174,48 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
     Animated.spring(slideAnim, { toValue: 0, useNativeDriver: true, tension: 65, friction: 10 }).start();
   };
 
-  const goToNextChapter = useCallback(() => {
-    if (chapterIndex < book.chapters.length - 1) {
-      const nextIndex = chapterIndex + 1;
-      animateChapterTransition('next');
-      setChapterIndex(nextIndex);
-      setTimeout(() => chapterScrollViewRef.current?.scrollTo({ x: nextIndex * 150, animated: true }), 100);
-    }
+  // --- NAVIGATION LOGIC RE-ARCHITECTED ---
+
+  // Function to handle changing chapters
+  const changeChapter = useCallback((newChapterIndex: number) => {
+    if (newChapterIndex < 0 || newChapterIndex >= book.chapters.length) return;
+
+    const direction = newChapterIndex > chapterIndex ? 'next' : 'prev';
+    animateChapterTransition(direction);
+    setChapterIndex(newChapterIndex);
+    // When changing chapter, always go to the first page of that chapter
+    setPageIndex(0);
+
+    setTimeout(() => chapterScrollViewRef.current?.scrollTo({ x: newChapterIndex * 150, animated: true }), 100);
   }, [chapterIndex, book.chapters.length]);
 
-  const goToPreviousChapter = useCallback(() => {
-    if (chapterIndex > 0) {
-      const prevIndex = chapterIndex - 1;
-      animateChapterTransition('prev');
-      setChapterIndex(prevIndex);
-      setTimeout(() => chapterScrollViewRef.current?.scrollTo({ x: Math.max(0, prevIndex * 150), animated: true }), 100);
+  // Function for the "Next Page" button
+  const goToNextPage = useCallback(() => {
+    if (pageIndex < currentPages.length - 1) {
+      // If not the last page of the chapter, just go to the next page
+      setPageIndex(prev => prev + 1);
+    } else if (chapterIndex < book.chapters.length - 1) {
+      // If it is the last page, go to the next chapter
+      changeChapter(chapterIndex + 1);
     }
-  }, [chapterIndex]);
+  }, [pageIndex, chapterIndex, currentPages.length, book.chapters.length, changeChapter]);
 
-  const handleChapterSelect = useCallback((index: number) => {
-    if (index === chapterIndex) return;
-    const direction = index > chapterIndex ? 'next' : 'prev';
-    animateChapterTransition(direction);
-    setChapterIndex(index);
-  }, [chapterIndex]);
+  // Function for the "Previous Page" button
+  const goToPreviousPage = useCallback(() => {
+    if (pageIndex > 0) {
+      // If not the first page of the chapter, just go to the previous page
+      setPageIndex(prev => prev - 1);
+    } else if (chapterIndex > 0) {
+      // If it is the first page, go to the previous chapter
+      const prevChapterIndex = chapterIndex - 1;
+      const prevChapterPages = chapterPages[prevChapterIndex] ?? [''];
+      // Go to the *last* page of the previous chapter
+      setChapterIndex(prevChapterIndex);
+      setPageIndex(prevChapterPages.length - 1);
+      animateChapterTransition('prev');
+      setTimeout(() => chapterScrollViewRef.current?.scrollTo({ x: Math.max(0, prevChapterIndex * 150), animated: true }), 100);
+    }
+  }, [pageIndex, chapterIndex, chapterPages, changeChapter]);
 
   const handlePageScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const page = Math.round(event.nativeEvent.contentOffset.x / screenWidth);
@@ -233,7 +252,7 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
           return (
             <TouchableOpacity
               key={chapter.id}
-              onPress={() => handleChapterSelect(index)}
+              onPress={() => changeChapter(index)}
               style={[
                 styles.chapterPill,
                 { backgroundColor: isActive ? appliedPalette.accent : 'transparent', borderColor: appliedPalette.accent },
@@ -256,6 +275,8 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
           showsHorizontalScrollIndicator={false}
           onMomentumScrollEnd={handlePageScroll}
           style={styles.contentContainer}
+          // Add a key to force re-mount on chapter change, ensuring scroll position resets
+          key={chapterIndex}
         >
           {currentPages.map((pageContent, pIndex) => (
             <View key={`${currentChapter.id}-${pIndex}`} style={styles.pageContainer}>
@@ -393,11 +414,16 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
         </View>
       </Modal>
 
-      {/* Footer with chapter navigation and progress */}
+      {/* --- UPDATED FOOTER --- */}
+      {/* The footer now controls page navigation */}
       <View style={[styles.footer, { borderTopColor: colors.border, backgroundColor: colors.cardBackground }]}>
-        <TouchableOpacity onPress={goToPreviousChapter} style={[styles.navButton, { opacity: chapterIndex === 0 ? 0.3 : 1 }]} disabled={chapterIndex === 0}>
+        <TouchableOpacity
+          onPress={goToPreviousPage}
+          style={[styles.navButton, { opacity: chapterIndex === 0 && pageIndex === 0 ? 0.3 : 1 }]}
+          disabled={chapterIndex === 0 && pageIndex === 0}
+        >
           <Ionicons name="chevron-back" size={24} color={colors.text} />
-          <ThemedText style={styles.navText}>Chương trước</ThemedText>
+          <ThemedText style={styles.navText}>Trang trước</ThemedText>
         </TouchableOpacity>
         <View style={styles.progressWrapper}>
           <View style={[styles.progressBar, { backgroundColor: colors.border }]}>
@@ -410,8 +436,12 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
             </View>
           </View>
         </View>
-        <TouchableOpacity onPress={goToNextChapter} style={[styles.navButton, { opacity: chapterIndex === book.chapters.length - 1 ? 0.3 : 1 }]} disabled={chapterIndex === book.chapters.length - 1}>
-          <ThemedText style={styles.navText}>Chương sau</ThemedText>
+        <TouchableOpacity
+          onPress={goToNextPage}
+          style={[styles.navButton, { opacity: chapterIndex === book.chapters.length - 1 && pageIndex === currentPages.length - 1 ? 0.3 : 1 }]}
+          disabled={chapterIndex === book.chapters.length - 1 && pageIndex === currentPages.length - 1}
+        >
+          <ThemedText style={styles.navText}>Trang sau</ThemedText>
           <Ionicons name="chevron-forward" size={24} color={colors.text} />
         </TouchableOpacity>
       </View>
@@ -419,7 +449,7 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
   );
 }
 
-// Styles have been updated to include modal, gallery, and timeline styles
+// Styles remain largely the same, only minor adjustments for timeline if needed
 const styles = StyleSheet.create({
   container: { flex: 1 },
   chapterPillsWrapper: { borderBottomWidth: 1, flexGrow: 0 },
