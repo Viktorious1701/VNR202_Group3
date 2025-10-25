@@ -1,4 +1,3 @@
-// VNR202_Group3/components/ebook-reader.tsx
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -13,9 +12,8 @@ import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  Text, // FIX: Added missing Text import
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import Markdown from 'react-native-markdown-display';
 import Animated, {
@@ -57,7 +55,6 @@ interface ReaderPalette {
 const BASE_WORDS_PER_PAGE = 190;
 const WORDS_PER_PAGE_MIN = 90;
 const FONT_SIZE_ADJUSTMENT = 9;
-// FIX: Renamed to uppercase for constant convention and used consistently
 const { width: SCREEN_WIDTH, height: screenHeight } = Dimensions.get('window');
 
 // Function to paginate content based on word count and font size
@@ -113,15 +110,12 @@ const ArtbookTextViewer = memo(({ title, description, caption }: { title?: strin
   const captionOpacity = useSharedValue(0);
 
   useEffect(() => {
-    // This effect runs once on mount to animate the text in.
-    // The dependency array is intentionally empty.
-    // Re-triggering the animation is handled by changing the `key` prop on the component instance.
     titleOpacity.value = withDelay(300, withTiming(1));
     titleTranslateY.value = withDelay(300, withTiming(0, { duration: 400, easing: Easing.out(Easing.cubic) }));
     descOpacity.value = withDelay(450, withTiming(1));
     descTranslateY.value = withDelay(450, withTiming(0, { duration: 400, easing: Easing.out(Easing.cubic) }));
     captionOpacity.value = withDelay(600, withTiming(1));
-  }, []); // FIX: Empty dependency array is correct here. Do not add animated values.
+  }, []);
 
   const titleStyle = useAnimatedStyle(() => ({
     opacity: titleOpacity.value,
@@ -139,7 +133,7 @@ const ArtbookTextViewer = memo(({ title, description, caption }: { title?: strin
     <>
       {title && <AnimatedText style={[styles.artbookTitle, titleStyle]}>{title}</AnimatedText>}
       {description && <AnimatedText style={[styles.artbookDescription, descStyle]}>{description}</AnimatedText>}
-      {caption && <AnimatedText style={[styles.artbookCaption, captionStyle]}>&quot;{caption}&quot;</AnimatedText>}
+      {caption && <AnimatedText style={[styles.artbookCaption, captionStyle]}>"{caption}"</AnimatedText>}
     </>
   );
 });
@@ -592,11 +586,11 @@ const styles = StyleSheet.create({
     height: screenHeight,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 10,
+    // FIX: Removed horizontal padding to ensure item is full screen width
   },
   artbookGalleryImage: {
-    width: '100%',
-    height: '80%',
+    width: '100%', // Take up full width of the item
+    height: '80%', // Allow some vertical breathing room
   },
   artbookFooter: {
     position: 'absolute',
