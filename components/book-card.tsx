@@ -1,28 +1,39 @@
-import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Colors } from '@/constants/theme';
 import { Ionicons } from '@expo/vector-icons';
+import { LibraryBook } from '@/types/library';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - 48) / 2; // 2 cards per row with padding
+const CATEGORY_LABELS: Record<LibraryBook['category'], string> = {
+  history: 'lịch sử',
+  literature: 'văn học',
+  music: 'âm nhạc',
+  culture: 'văn hóa',
+  press: 'báo chí',
+  archive: 'tư liệu',
+};
 
 interface BookCardProps {
-  title: string;
-  author: string;
-  year?: string;
-  progress?: number;
-  onPress?: () => void;
+  book: LibraryBook;
+  onPress?: (book: LibraryBook) => void;
 }
 
-export function BookCard({ title, author, year, progress = 0, onPress }: BookCardProps) {
+export function BookCard({ book, onPress }: BookCardProps) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
+  const progress = book.progress ?? 0;
+  const coverColor = book.coverColor ?? colors.accent;
+  const accentColor = book.accentColor ?? colors.tint;
+  const readingTime = book.readingTimeMinutes ?? Math.max(5, Math.round((progress || 10) / 6));
+  const categoryLabel = CATEGORY_LABELS[book.category] ?? book.category;
+  const formattedCategory = categoryLabel.charAt(0).toUpperCase() + categoryLabel.slice(1);
 
   return (
-    <TouchableOpacity onPress={onPress} style={styles.container}>
+    <TouchableOpacity onPress={() => onPress?.(book)} style={styles.container} activeOpacity={0.85}>
       <ThemedView style={[
         styles.card, 
         { 
@@ -31,27 +42,34 @@ export function BookCard({ title, author, year, progress = 0, onPress }: BookCar
           borderColor: colors.border,
         }
       ]}>
-        {/* Book Cover */}
-        <View style={[styles.cover, { backgroundColor: colors.accent }]}>
-          <View style={[styles.coverOverlay, { backgroundColor: colors.tint, opacity: 0.3 }]} />
-          <Ionicons name="book" size={48} color={colors.background} />
+        <View style={[styles.cover, { backgroundColor: coverColor }]}>
+          <View style={[styles.coverOverlay, { borderColor: accentColor }]} />
+          <View style={[styles.coverBadge, { backgroundColor: accentColor }]}>
+            <Ionicons name="book" size={32} color={colors.background} />
+          </View>
+          {book.highlightTag && (
+            <View style={[styles.ribbon, { backgroundColor: accentColor }]}>
+              <ThemedText style={styles.ribbonText}>{book.highlightTag.toUpperCase()}</ThemedText>
+            </View>
+          )}
         </View>
-        
-        {/* Book Info */}
         <View style={styles.info}>
           <ThemedText style={styles.title} numberOfLines={2}>
-            {title}
+            {book.title}
           </ThemedText>
           <ThemedText style={[styles.author, { color: colors.icon }]} numberOfLines={1}>
-            {author}
+            {book.author}
           </ThemedText>
-          {year && (
+          {book.year && (
             <ThemedText style={[styles.year, { color: colors.accentSecondary }]}>
-              {year}
+              {book.year}
             </ThemedText>
           )}
-          
-          {/* Reading Progress */}
+          {book.synopsis && (
+            <ThemedText style={[styles.synopsis, { color: colors.icon }]} numberOfLines={3}>
+              {book.synopsis}
+            </ThemedText>
+          )}
           {progress > 0 && (
             <View style={styles.progressContainer}>
               <View style={[styles.progressBar, { backgroundColor: colors.border }]}>
@@ -59,7 +77,7 @@ export function BookCard({ title, author, year, progress = 0, onPress }: BookCar
                   style={[
                     styles.progressFill, 
                     { 
-                      backgroundColor: colors.tint,
+                      backgroundColor: accentColor,
                       width: `${progress}%` 
                     }
                   ]} 
@@ -68,6 +86,16 @@ export function BookCard({ title, author, year, progress = 0, onPress }: BookCar
               <ThemedText style={styles.progressText}>{progress}%</ThemedText>
             </View>
           )}
+          <View style={styles.metaRow}>
+            <View style={styles.metaItem}>
+              <Ionicons name="time" size={14} color={accentColor} />
+              <ThemedText style={styles.metaText}>{readingTime} phút đọc</ThemedText>
+            </View>
+            <View style={styles.metaItem}>
+              <Ionicons name="bookmark" size={14} color={accentColor} />
+              <ThemedText style={styles.metaText}>{formattedCategory}</ThemedText>
+            </View>
+          </View>
         </View>
       </ThemedView>
     </TouchableOpacity>
@@ -93,9 +121,35 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
+    overflow: 'hidden',
   },
   coverOverlay: {
     ...StyleSheet.absoluteFillObject,
+    borderWidth: 1.5,
+    borderStyle: 'dashed',
+    borderRadius: 12,
+    opacity: 0.45,
+  },
+  coverBadge: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  ribbon: {
+    position: 'absolute',
+    top: 12,
+    left: -40,
+    paddingVertical: 6,
+    paddingHorizontal: 48,
+    transform: [{ rotate: '-12deg' }],
+  },
+  ribbonText: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: '#fff',
+    letterSpacing: 1,
   },
   info: {
     padding: 12,
@@ -113,6 +167,11 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontStyle: 'italic',
     marginBottom: 8,
+  },
+  synopsis: {
+    fontSize: 12,
+    lineHeight: 16,
+    marginBottom: 12,
   },
   progressContainer: {
     flexDirection: 'row',
@@ -132,5 +191,19 @@ const styles = StyleSheet.create({
   progressText: {
     fontSize: 10,
     fontWeight: '600',
+  },
+  metaRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 12,
+  },
+  metaItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  metaText: {
+    fontSize: 11,
+    textTransform: 'capitalize',
   },
 });

@@ -1,102 +1,121 @@
-import React, { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { BookShelf } from '@/components/book-shelf';
 import { EBookReader } from '@/components/ebook-reader';
+import { HeritageBanner } from '@/components/heritage-banner';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Colors } from '@/constants/theme';
 import { Ionicons } from '@expo/vector-icons';
+import type { LibraryBook } from '@/types/library';
+import { libraryBooks } from '@/data/library';
 
-// Sample Vietnamese Republic history books
-const historyBooks = [
-  {
-    id: '1',
-    title: 'Lịch Sử Việt Nam Cộng Hòa',
-    author: 'Nguyễn Văn A',
-    year: '1955-1975',
-    progress: 45,
-  },
-  {
-    id: '2',
-    title: 'Hồi Ức Một Thời',
-    author: 'Trần Thị B',
-    year: '1963',
-    progress: 0,
-  },
-  {
-    id: '3',
-    title: 'Văn Hóa Sài Gòn',
-    author: 'Lê Văn C',
-    year: '1960-1970',
-    progress: 78,
-  },
-  {
-    id: '4',
-    title: 'Âm Nhạc Vàng',
-    author: 'Phạm Duy',
-    year: '1954-1975',
-    progress: 23,
-  },
-];
+type ReaderThemeKey = 'classic' | 'sepia' | 'night';
 
-const literatureBooks = [
+interface LibraryShelfConfig {
+  id: string;
+  title: string;
+  description: string;
+  iconName: keyof typeof Ionicons.glyphMap;
+  categories: LibraryBook['category'][];
+}
+
+const libraryShelves: LibraryShelfConfig[] = [
   {
-    id: '5',
-    title: 'Thơ Chiến Tranh',
-    author: 'Nhiều tác giả',
-    year: '1965',
-    progress: 0,
+    id: 'shelf-history',
+    title: 'Lịch Sử & Hồi Ức',
+    description: 'Sự kiện, đối thoại và ghi chép về nền cộng hòa.',
+    iconName: 'library',
+    categories: ['history', 'press'],
   },
   {
-    id: '6',
-    title: 'Truyện Ngắn Sài Gòn',
-    author: 'Vũ Bằng',
-    year: '1968',
-    progress: 56,
+    id: 'shelf-culture',
+    title: 'Văn Hóa Đô Thị',
+    description: 'Nhịp sống Sài Gòn, đời sống cộng đồng, ký ức thường nhật.',
+    iconName: 'color-palette',
+    categories: ['culture'],
+  },
+  {
+    id: 'shelf-art',
+    title: 'Âm Nhạc & Văn Học',
+    description: 'Từ phòng trà đêm đến những bản thảo dưới hiên mưa.',
+    iconName: 'musical-notes',
+    categories: ['music', 'literature'],
   },
 ];
 
-const sampleContent = `Việt Nam Cộng Hòa (1955-1975) là một giai đoạn lịch sử quan trọng trong lòng dân tộc Việt Nam. Thời kỳ này đánh dấu một chương đầy biến động nhưng cũng không kém phần rực rỡ trong văn hóa, nghệ thuật và đời sống xã hội.
-
-Sài Gòn, trái tim của miền Nam, là một đô thị sôi động với nền văn hóa đa dạng, nơi hội tụ của nhiều dòng chảy văn hóa Đông - Tây. Từ những quán cà phê vỉa hè đến các rạp hát lớn, từ âm nhạc vàng đến văn học hiện đại, tất cả đã góp phần tạo nên một thời kỳ văn hóa độc đáo.
-
-Những nghệ sĩ, nhà văn, nhà thơ của thời kỳ này đã để lại di sản văn hóa quý giá, phản ánh tinh thần dân tộc và khát vọng tự do. Âm nhạc của Phạm Duy, Trịnh Công Sơn, văn học của Vũ Bằng, Nhất Linh và nhiều người khác đã trở thành những biểu tượng văn hóa bất hủ.
-
-Hôm nay, khi nhìn lại, chúng ta càng thấy rõ giá trị của những di sản văn hóa này. Chúng không chỉ là ký ức về một thời đã qua, mà còn là nguồn cảm hứng và bài học quý báu cho các thế hệ sau.`;
+const archiveSpotlight = {
+  title: 'Góc Lưu Trữ Tuần Này',
+  venue: 'Thư viện Quốc Gia Sài Gòn',
+  schedule: '08:00 - 17:00 (thứ Ba - Chủ nhật)',
+  description:
+    'Triển lãm chuyên đề giới thiệu bản đồ quân sự, ảnh chụp phòng trà và nhật ký phóng viên trong giai đoạn 1955-1973.',
+};
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const [isReading, setIsReading] = useState(false);
-  const [currentBook, setCurrentBook] = useState<string | null>(null);
+  const [activeBookId, setActiveBookId] = useState<string | null>(null);
+  const [activeChapterIndex, setActiveChapterIndex] = useState(0);
+  const [readerTheme, setReaderTheme] = useState<ReaderThemeKey>('classic');
 
-  const handleBookPress = (bookId: string) => {
-    setCurrentBook(bookId);
+  const highlightedBook = libraryBooks[0];
+  const continueReading = useMemo(
+    () =>
+      libraryBooks
+        .filter((book) => (book.progress ?? 0) > 0)
+        .sort((a, b) => (b.progress ?? 0) - (a.progress ?? 0)),
+    [],
+  );
+
+  const authorCount = useMemo(() => new Set(libraryBooks.map((book) => book.author)).size, []);
+  const chapterCount = useMemo(
+    () => libraryBooks.reduce((acc, book) => acc + book.chapters.length, 0),
+    [],
+  );
+  const readingHours = useMemo(
+    () => Math.ceil(libraryBooks.reduce((acc, book) => acc + (book.readingTimeMinutes ?? 0), 0) / 60),
+    [],
+  );
+
+  const currentBook = useMemo<LibraryBook | null>(
+    () => libraryBooks.find((book) => book.id === activeBookId) ?? null,
+    [activeBookId],
+  );
+
+  const handleBookPress = (book: LibraryBook) => {
+    setActiveBookId(book.id);
+    setActiveChapterIndex(0);
+    setReaderTheme('classic');
     setIsReading(true);
   };
 
   const handleBackToLibrary = () => {
     setIsReading(false);
-    setCurrentBook(null);
+    setActiveBookId(null);
   };
 
   if (isReading && currentBook) {
     return (
       <ThemedView style={styles.container}>
-        <TouchableOpacity 
-          onPress={handleBackToLibrary}
-          style={[styles.backButton, { backgroundColor: colors.cardBackground }]}
-        >
-          <Ionicons name="arrow-back" size={24} color={colors.text} />
-          <ThemedText style={styles.backText}>Thư viện</ThemedText>
-        </TouchableOpacity>
+        <View style={[styles.readerHeader, { backgroundColor: colors.cardBackground, borderBottomColor: colors.border }]}>
+          <TouchableOpacity onPress={handleBackToLibrary} style={styles.readerBackButton}>
+            <Ionicons name="arrow-back" size={22} color={colors.text} />
+            <ThemedText style={styles.readerBackText}>Trở về thư viện</ThemedText>
+          </TouchableOpacity>
+          <View style={styles.readerMeta}>
+            <ThemedText style={styles.readerBook}>{currentBook.title}</ThemedText>
+            <ThemedText style={[styles.readerMetaLine, { color: colors.icon }]}>
+              Chương {activeChapterIndex + 1}/{currentBook.chapters.length} • Chế độ {readerTheme === 'night' ? 'đêm' : readerTheme === 'sepia' ? 'sepia' : 'cổ điển'}
+            </ThemedText>
+          </View>
+        </View>
         <EBookReader
-          title="Lịch Sử Việt Nam Cộng Hòa"
-          chapter="Chương 1: Khởi Đầu"
-          content={sampleContent}
-          onNextPage={() => console.log('Next page')}
-          onPrevPage={() => console.log('Previous page')}
+          book={currentBook}
+          onChapterChange={setActiveChapterIndex}
+          onReaderThemeChange={setReaderTheme}
         />
       </ThemedView>
     );
@@ -104,56 +123,114 @@ export default function HomeScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <ScrollView 
+      <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
-        <View style={[styles.header, { backgroundColor: colors.cardBackground }]}>
-          <View style={styles.headerContent}>
-            <View style={[styles.flagIcon, { backgroundColor: colors.accent }]}>
-              <View style={[styles.flagStripe, { backgroundColor: colors.tint }]} />
-            </View>
-            <View>
-              <ThemedText type="title" style={styles.headerTitle}>
-                Thư Viện Việt Nam Cộng Hòa
-              </ThemedText>
-              <ThemedText style={[styles.headerSubtitle, { color: colors.icon }]}>
-                Lưu giữ ký ức, gìn giữ văn hóa
-              </ThemedText>
-            </View>
-          </View>
-        </View>
-
-        {/* Book Shelves */}
         <View style={styles.content}>
-          <BookShelf
-            title="Lịch Sử & Hồi Ức"
-            books={historyBooks}
-            onBookPress={handleBookPress}
-          />
-          
-          <BookShelf
-            title="Văn Học & Nghệ Thuật"
-            books={literatureBooks}
-            onBookPress={handleBookPress}
+          <HeritageBanner
+            title="Thư Viện Việt Nam Cộng Hòa"
+            subtitle="Lưu giữ ký ức, gìn giữ văn hóa"
+            description="Khám phá kho tư liệu về lịch sử, âm nhạc, văn chương và báo chí miền Nam 1955-1975. Mỗi tựa sách là một lát cắt ký ức."
+            ctaLabel="Đọc ngay"
+            onPress={() => handleBookPress(highlightedBook)}
+            stats={[
+              { value: `${libraryBooks.length}`, label: 'tựa sách' },
+              { value: `${chapterCount}`, label: 'chương tư liệu' },
+              { value: `${authorCount}`, label: 'tác giả' },
+              { value: `${readingHours}+`, label: 'giờ đọc ước tính' },
+            ]}
           />
 
-          {/* Info Section */}
-          <ThemedView style={[styles.infoSection, { backgroundColor: colors.cardBackground }]}>
-            <Ionicons name="information-circle" size={24} color={colors.tint} />
-            <View style={styles.infoContent}>
-              <ThemedText style={styles.infoTitle}>Về Thư Viện</ThemedText>
-              <ThemedText style={[styles.infoText, { color: colors.icon }]}>
-                Bộ sưu tập sách về lịch sử, văn hóa, và nghệ thuật Việt Nam Cộng Hòa. 
-                Nhấn vào sách để bắt đầu đọc.
-              </ThemedText>
+          {continueReading.length > 0 && (
+            <View style={styles.section}>
+              <View style={styles.sectionHeaderRow}>
+                <ThemedText type="subtitle" style={styles.sectionTitle}>Đang đọc dở</ThemedText>
+                <ThemedText style={[styles.sectionHint, { color: colors.icon }]}>Tiếp tục hành trình còn dang dở</ThemedText>
+              </View>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.continueRow}
+              >
+                {continueReading.map((book) => (
+                  <ContinueReadingCard key={book.id} book={book} colors={colors} onPress={handleBookPress} />
+                ))}
+              </ScrollView>
+            </View>
+          )}
+
+          {libraryShelves.map((shelf) => {
+            const shelfBooks = libraryBooks.filter((book) => shelf.categories.includes(book.category));
+            if (shelfBooks.length === 0) {
+              return null;
+            }
+            return (
+              <BookShelf
+                key={shelf.id}
+                title={shelf.title}
+                description={shelf.description}
+                iconName={shelf.iconName}
+                books={shelfBooks}
+                onBookPress={handleBookPress}
+              />
+            );
+          })}
+
+          <ThemedView style={[styles.archiveCard, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}>
+            <View style={styles.archiveHeader}>
+              <Ionicons name="archive" size={22} color={colors.tint} />
+              <ThemedText type="subtitle" style={styles.archiveTitle}>{archiveSpotlight.title}</ThemedText>
+            </View>
+            <ThemedText style={[styles.archiveDescription, { color: colors.icon }]}>
+              {archiveSpotlight.description}
+            </ThemedText>
+            <View style={styles.archiveMetaRow}>
+              <View style={styles.archiveMeta}>
+                <Ionicons name="location" size={16} color={colors.tint} />
+                <ThemedText style={styles.archiveMetaText}>{archiveSpotlight.venue}</ThemedText>
+              </View>
+              <View style={styles.archiveMeta}>
+                <Ionicons name="time" size={16} color={colors.tint} />
+                <ThemedText style={styles.archiveMetaText}>{archiveSpotlight.schedule}</ThemedText>
+              </View>
             </View>
           </ThemedView>
         </View>
       </ScrollView>
     </ThemedView>
+  );
+}
+
+interface ContinueReadingCardProps {
+  book: LibraryBook;
+  colors: typeof Colors.light;
+  onPress: (book: LibraryBook) => void;
+}
+
+function ContinueReadingCard({ book, colors, onPress }: ContinueReadingCardProps) {
+  const progress = book.progress ?? 0;
+  return (
+    <TouchableOpacity style={[styles.continueCard, { backgroundColor: colors.cardBackground, borderColor: colors.border }]} onPress={() => onPress(book)}>
+      <View style={[styles.continueFlag, { backgroundColor: book.accentColor ?? colors.accent }]}>
+        <View style={[styles.continueStripe, { backgroundColor: book.coverColor ?? colors.tint }]} />
+      </View>
+      <View style={styles.continueTextBlock}>
+        <ThemedText style={styles.continueTitle} numberOfLines={2}>
+          {book.title}
+        </ThemedText>
+        <ThemedText style={[styles.continueAuthor, { color: colors.icon }]}>
+          {book.author}
+        </ThemedText>
+      </View>
+      <View style={styles.continueProgress}>
+        <View style={[styles.continueBar, { backgroundColor: colors.border }]}>
+          <View style={[styles.continueFill, { width: `${progress}%`, backgroundColor: book.accentColor ?? colors.tint }]} />
+        </View>
+        <ThemedText style={styles.continuePercent}>{progress}%</ThemedText>
+      </View>
+    </TouchableOpacity>
   );
 }
 
@@ -165,73 +242,149 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 32,
-  },
-  header: {
-    paddingTop: 60,
-    paddingHorizontal: 16,
-    paddingBottom: 24,
-    marginBottom: 16,
-  },
-  headerContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-  },
-  flagIcon: {
-    width: 60,
-    height: 40,
-    borderRadius: 8,
-    justifyContent: 'center',
-    overflow: 'hidden',
-  },
-  flagStripe: {
-    width: '100%',
-    height: 12,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    fontStyle: 'italic',
-    marginTop: 4,
+    paddingBottom: 40,
   },
   content: {
     paddingHorizontal: 16,
   },
-  backButton: {
+  section: {
+    marginBottom: 24,
+  },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+  },
+  sectionHint: {
+    fontSize: 12,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  continueRow: {
+    gap: 12,
+    paddingVertical: 4,
+  },
+  continueCard: {
+    width: 220,
+    borderRadius: 16,
+    borderWidth: 1,
+    padding: 16,
+    marginRight: 12,
+    shadowColor: 'rgba(0,0,0,0.1)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  continueFlag: {
+    width: 42,
+    height: 28,
+    borderRadius: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  continueStripe: {
+    width: '85%',
+    height: 8,
+    borderRadius: 4,
+  },
+  continueTextBlock: {
+    gap: 4,
+  },
+  continueTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  continueAuthor: {
+    fontSize: 13,
+  },
+  continueProgress: {
+    marginTop: 12,
+  },
+  continueBar: {
+    height: 6,
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  continueFill: {
+    height: '100%',
+    borderRadius: 3,
+  },
+  continuePercent: {
+    fontSize: 12,
+    fontWeight: '600',
+    marginTop: 6,
+  },
+  archiveCard: {
+    borderWidth: 1,
+    borderRadius: 16,
+    padding: 18,
+    marginBottom: 32,
+    gap: 12,
+  },
+  archiveHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    padding: 12,
-    marginTop: 40,
-    marginHorizontal: 16,
-    marginBottom: 8,
-    borderRadius: 8,
-  },
-  backText: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  infoSection: {
-    flexDirection: 'row',
     gap: 12,
-    padding: 16,
-    borderRadius: 12,
-    marginTop: 16,
   },
-  infoContent: {
-    flex: 1,
+  archiveTitle: {
+    fontSize: 18,
+    fontWeight: '700',
   },
-  infoTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  infoText: {
+  archiveDescription: {
     fontSize: 14,
     lineHeight: 20,
+  },
+  archiveMetaRow: {
+    flexDirection: 'row',
+    gap: 16,
+    flexWrap: 'wrap',
+  },
+  archiveMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  archiveMetaText: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  readerHeader: {
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 16,
+  },
+  readerBackButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  readerBackText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  readerMeta: {
+    flex: 1,
+    alignItems: 'flex-end',
+  },
+  readerBook: {
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  readerMetaLine: {
+    fontSize: 12,
+    marginTop: 4,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
 });
