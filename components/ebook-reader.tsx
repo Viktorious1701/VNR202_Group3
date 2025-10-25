@@ -20,7 +20,7 @@ import Markdown from 'react-native-markdown-display';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useReaderPreferences, type ReaderThemeKey } from '@/hooks/use-reader-preferences';
-import { LibraryBook, MediaItem } from '@/types/library';
+import { LibraryBook, MediaItem, TimelineEvent } from '@/types/library';
 import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
 
@@ -62,13 +62,38 @@ const paginateContent = (content: string, fontSize: number): string[] => {
   return pages.length > 0 ? pages : [''];
 };
 
+// --- NEW TIMELINE COMPONENT ---
+// This is a new, specialized component for rendering the timeline view.
+const TimelineViewer = ({
+  events,
+  palette,
+}: {
+  events: TimelineEvent[];
+  palette: ReaderPalette;
+}) => (
+  <View style={styles.timelineContainer}>
+    {events.map((event, index) => (
+      <View key={`event-${index}`} style={styles.timelineEvent}>
+        <View style={styles.timelineLineContainer}>
+          <View style={[styles.timelineDot, { backgroundColor: palette.accent }]} />
+          {index < events.length - 1 && <View style={[styles.timelineLine, { backgroundColor: palette.border }]} />}
+        </View>
+        <View style={styles.timelineContent}>
+          <Image source={event.image} style={styles.timelineImage} resizeMode="cover" />
+          <ThemedText style={[styles.timelineDate, { color: palette.accent }]}>{event.date}</ThemedText>
+          <ThemedText style={[styles.timelineDescription, { color: palette.textColor }]}>{event.description}</ThemedText>
+        </View>
+      </View>
+    ))}
+  </View>
+);
+
 interface EBookReaderProps {
   book: LibraryBook;
   onChapterChange?: (chapterIndex: number) => void;
 }
 
 export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
-  // Hooks for theme, state, and refs
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { readerTheme, fontSize } = useReaderPreferences();
@@ -76,7 +101,6 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
   const chapterScrollViewRef = useRef<ScrollView>(null);
   const slideAnim = useRef(new Animated.Value(0)).current;
 
-  // State for the new media viewer modal
   const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
   const [mediaModalVisible, setMediaModalVisible] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -144,7 +168,6 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
 
   const appliedPalette = readerPalettes[readerTheme];
 
-  // --- CHAPTER NAVIGATION LOGIC ---
   const animateChapterTransition = (direction: 'next' | 'prev') => {
     slideAnim.setValue(direction === 'next' ? screenWidth : -screenWidth);
     Animated.spring(slideAnim, { toValue: 0, useNativeDriver: true, tension: 65, friction: 10 }).start();
@@ -175,25 +198,20 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
     setChapterIndex(index);
   }, [chapterIndex]);
 
-  // --- PAGE NAVIGATION LOGIC ---
   const handlePageScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const page = Math.round(event.nativeEvent.contentOffset.x / screenWidth);
     if (page !== pageIndex) setPageIndex(page);
   };
 
-  // --- MEDIA MODAL LOGIC ---
-  // Function to open the modal with the correct media item
   const handleMediaPress = (mediaKey: string) => {
-    // Look for the media in the current chapter's media object
     const mediaItem = currentChapter.media?.[mediaKey];
     if (mediaItem) {
       setSelectedMedia(mediaItem);
-      setCurrentImageIndex(0); // Reset to first image for galleries
+      setCurrentImageIndex(0);
       setMediaModalVisible(true);
     }
   };
 
-  // Function to close the modal and reset state
   const closeMediaModal = () => {
     setMediaModalVisible(false);
     setSelectedMedia(null);
@@ -312,7 +330,6 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
       </Animated.View>
 
       {/* --- MEDIA VIEWER MODAL --- */}
-      {/* This modal is displayed when a media item is selected */}
       <Modal visible={mediaModalVisible} transparent animationType="fade" onRequestClose={closeMediaModal}>
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, { backgroundColor: colors.background }]}>
@@ -327,7 +344,7 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
                   <ThemedText style={styles.modalTitle}>{selectedMedia?.title}</ThemedText>
                   {selectedMedia?.type === 'gallery' && (
                     <ThemedText style={[styles.modalImageCounter, { color: colors.icon }]}>
-                      {currentImageIndex + 1} / {selectedMedia?.images.length}
+                      {currentImageIndex + 1} / {(selectedMedia?.items as any[]).length}
                     </ThemedText>
                   )}
                 </View>
@@ -338,10 +355,12 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
             </View>
 
             <ScrollView style={styles.modalBody} contentContainerStyle={styles.modalBodyContent}>
-              {/* Conditional rendering for gallery vs single image */}
-              {selectedMedia?.type === 'gallery' ? (
+              {/* --- CONDITIONAL RENDER FOR MEDIA TYPE --- */}
+              {selectedMedia?.type === 'timeline' ? (
+                <TimelineViewer events={selectedMedia.items as TimelineEvent[]} palette={appliedPalette} />
+              ) : selectedMedia?.type === 'gallery' ? (
                 <FlatList
-                  data={selectedMedia.images}
+                  data={selectedMedia.items as any[]}
                   horizontal
                   pagingEnabled
                   showsHorizontalScrollIndicator={false}
@@ -357,7 +376,7 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
                   keyExtractor={(_, index) => `gallery-${index}`}
                 />
               ) : (
-                <Image source={selectedMedia?.images[0]} style={styles.modalImage} resizeMode="contain" />
+                <Image source={(selectedMedia?.items as any[])?.[0]} style={styles.modalImage} resizeMode="contain" />
               )}
 
               <View style={[styles.modalInfo, { backgroundColor: colors.cardBackground }]}>
@@ -400,7 +419,7 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
   );
 }
 
-// Styles have been updated to include modal and gallery styles
+// Styles have been updated to include modal, gallery, and timeline styles
 const styles = StyleSheet.create({
   container: { flex: 1 },
   chapterPillsWrapper: { borderBottomWidth: 1, flexGrow: 0 },
@@ -451,4 +470,46 @@ const styles = StyleSheet.create({
   modalDescription: { fontSize: 16, lineHeight: 24 },
   captionBox: { flexDirection: 'row', alignItems: 'flex-start', gap: 8, padding: 12, borderRadius: 12, borderWidth: 1, marginTop: 12 },
   captionText: { flex: 1, fontSize: 14, lineHeight: 20, fontStyle: 'italic' },
+  // Timeline styles
+  timelineContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  timelineEvent: {
+    flexDirection: 'row',
+  },
+  timelineLineContainer: {
+    alignItems: 'center',
+    width: 30,
+  },
+  timelineDot: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    zIndex: 1,
+  },
+  timelineLine: {
+    flex: 1,
+    width: 2,
+  },
+  timelineContent: {
+    flex: 1,
+    paddingLeft: 10,
+    paddingBottom: 30,
+  },
+  timelineImage: {
+    width: '100%',
+    height: 180,
+    borderRadius: 12,
+    marginBottom: 12,
+  },
+  timelineDate: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  timelineDescription: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
 });

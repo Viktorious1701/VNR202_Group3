@@ -1,14 +1,20 @@
 /**
- * Represents a single piece of interactive media, such as an image, gallery, or timeline.
- * This is used for the "artbook" feature where users can click on text to see visuals.
+ * Represents a single event within a timeline media item.
  */
+export interface TimelineEvent {
+  image: any; // Image source, compatible with require()
+  date: string; // The date or title of the event
+  description: string; // A short description of what happened
+}
+
 export interface MediaItem {
   id: string;
   type: 'image' | 'gallery' | 'timeline';
   title: string;
   description?: string;
-  // An array of image sources. Uses `any` to be compatible with `require()`.
-  images: any[]; 
+  // For 'image' and 'gallery', this is an array of image sources.
+  // For 'timeline', this is an array of TimelineEvent objects.
+  items: any[] | TimelineEvent[]; 
   caption?: string;
 }
 
@@ -19,8 +25,6 @@ export interface LibraryChapter {
   featuredQuote?: string;
   estimatedReadingMinutes?: number;
   backgroundImage?: any;
-  // A new field to hold a dictionary of media items relevant to this chapter.
-  // The key (e.g., 'congress-iii') will be used in the Markdown content to trigger the media.
   media?: Record<string, MediaItem>;
 }
 

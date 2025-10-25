@@ -1,17 +1,16 @@
-import type { LibraryChapter, MediaItem } from '@/types/library';
+import type { LibraryChapter, MediaItem, TimelineEvent } from '@/types/library';
 
 // A default background image used as a placeholder.
 const defaultBackground = require('@/assets/images/partial-react-logo.png');
 
 // This object contains all the interactive media for Chapter 2.
-// The image paths have been updated from placeholders to specific, descriptive filenames.
 const chapter2Media: Record<string, MediaItem> = {
   'congress-iii': {
     id: 'congress-hall',
     type: 'gallery',
     title: 'Đại hội Đảng lần thứ III',
     description: 'Hình ảnh từ Đại hội đại biểu toàn quốc lần thứ III của Đảng, tháng 9/1960.',
-    images: [
+    items: [
       require('@/assets/images/congress-iii-hall-01.png'), // Placeholder for Hội trường
       require('@/assets/images/congress-iii-hcm-speech-01.png'), // Placeholder for HCM Speech
     ],
@@ -22,7 +21,7 @@ const chapter2Media: Record<string, MediaItem> = {
     type: 'gallery',
     title: 'Ấp chiến lược',
     description: 'Chương trình "ấp chiến lược" là xương sống của chiến lược "chiến tranh đặc biệt" do Mỹ-nguỵ đề ra.',
-    images: [
+    items: [
       require('@/assets/images/strategic-hamlet-map-01.png'), // Placeholder for map
       require('@/assets/images/strategic-hamlet-destruction-01.png'), // Placeholder for people breaking the hamlet
     ],
@@ -33,7 +32,7 @@ const chapter2Media: Record<string, MediaItem> = {
     type: 'image',
     title: 'Chiến thắng Ấp Bắc',
     description: 'Trận Ấp Bắc tại Mỹ Tho ngày 2/1/1963 là một thắng lợi quân sự vang dội, chứng tỏ khả năng đánh bại các chiến thuật hiện đại của địch.',
-    images: [require('@/assets/images/ap-bac-victory-01.png')],
+    items: [require('@/assets/images/ap-bac-victory-01.png')],
     caption: 'Chiến thắng này đã dấy lên phong trào "Thi đua Ấp Bắc, giết giặc lập công" trên toàn miền Nam.',
   },
   'kennedy': {
@@ -41,15 +40,33 @@ const chapter2Media: Record<string, MediaItem> = {
     type: 'image',
     title: 'Tổng thống Kennedy',
     description: 'Tổng thống John F. Kennedy là người đã đề ra chiến lược "chiến tranh đặc biệt" tại Việt Nam.',
-    images: [require('@/assets/images/president-kennedy-portrait-01.png')],
+    items: [require('@/assets/images/president-kennedy-portrait-01.png')],
     caption: 'Công thức của chiến lược là: Quân nguỵ + vũ khí Mỹ + cố vấn Mỹ.',
   },
+  // --- NEW TIMELINE DATA ---
+  // The 'diem-nhu' item is now a timeline with a sequence of events.
   'diem-nhu': {
     id: 'coup-1963',
-    type: 'image',
-    title: 'Đảo chính 1/11/1963',
+    type: 'timeline',
+    title: 'Diễn biến Đảo chính 1/11/1963',
     description: 'Cuộc đảo chính do Mỹ hậu thuẫn đã lật đổ chế độ của anh em Ngô Đình Diệm và Ngô Đình Nhu.',
-    images: [require('@/assets/images/diem-nhu-coup-1963-01.png')],
+    items: [
+      {
+        image: require('@/assets/images/diem-nhu-coup-1963-01.png'),
+        date: 'Sáng 1/11/1963',
+        description: 'Các tướng lĩnh phe đảo chính bắt đầu hành động, bao vây Dinh Gia Long.',
+      },
+      {
+        image: require('@/assets/images/partial-react-logo.png'), // Placeholder for another image
+        date: 'Rạng sáng 2/11/1963',
+        description: 'Anh em Diệm - Nhu bí mật rời Dinh và đến ẩn náu tại nhà thờ Cha Tam ở Chợ Lớn.',
+      },
+      {
+        image: require('@/assets/images/react-logo.png'), // Placeholder for another image
+        date: 'Sáng 2/11/1963',
+        description: 'Sau khi bị bắt, hai anh em Ngô Đình Diệm và Ngô Đình Nhu bị sát hại trên đường về Bộ Tổng tham mưu.',
+      },
+    ] as TimelineEvent[],
     caption: 'Sau đảo chính, tình hình chính trị ở miền Nam Việt Nam càng trở nên bất ổn.',
   },
   'binh-gia': {
@@ -57,7 +74,7 @@ const chapter2Media: Record<string, MediaItem> = {
     type: 'image',
     title: 'Chiến thắng Bình Giã',
     description: 'Trận chiến diễn ra tại Bình Giã, Bà Rịa vào tháng 12/1964.',
-    images: [require('@/assets/images/binh-gia-victory-01.png')],
+    items: [require('@/assets/images/binh-gia-victory-01.png')],
     caption: 'Một trong những chiến thắng quan trọng góp phần làm phá sản "chiến tranh đặc biệt".',
   },
   'ba-gia': {
@@ -65,7 +82,7 @@ const chapter2Media: Record<string, MediaItem> = {
     type: 'image',
     title: 'Chiến thắng Ba Gia',
     description: 'Trận chiến tại Ba Gia, Quảng Ngãi vào tháng 6/1965.',
-    images: [require('@/assets/images/ba-gia-victory-01.png')],
+    items: [require('@/assets/images/ba-gia-victory-01.png')],
     caption: 'Tiếp tục khẳng định sự thất bại không thể tránh khỏi của chiến lược chiến tranh của địch.',
   },
   'dong-xoai': {
@@ -73,12 +90,12 @@ const chapter2Media: Record<string, MediaItem> = {
     type: 'image',
     title: 'Chiến thắng Đồng Xoài',
     description: 'Trận Đồng Xoài, Bình Phước vào tháng 6/1965 là một trong những đòn quyết định.',
-    images: [require('@/assets/images/dong-xoai-victory-01.png')],
+    items: [require('@/assets/images/dong-xoai-victory-01.png')],
     caption: 'Thắng lợi này đã góp phần làm phá sản hoàn toàn chiến lược "chiến tranh đặc biệt", buộc Mỹ phải leo thang.',
   },
 };
 
-// This file contains the data exclusively for Chapter 2.
+// The rest of this file remains the same...
 export const chapter2: LibraryChapter = {
   id: 'chapter-1961-1965',
   title: 'Giai đoạn 1961 - 1965',
