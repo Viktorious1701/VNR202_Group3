@@ -1,226 +1,224 @@
+// VNR202_Group3/data/library.ts
 import type { LibraryBook } from '@/types/library';
 
-// For now using placeholder - you can replace with actual Vietnamese heritage images
+// A default background image used as a placeholder.
+// This can be replaced with actual historical images for each chapter.
 const defaultBackground = require('@/assets/images/partial-react-logo.png');
 
 export const libraryBooks: LibraryBook[] = [
+  // This single LibraryBook object contains the entire historical text you provided.
+  // The content is structured into distinct chapters based on the main sections of the source text.
   {
-    id: 'history-lsvnr',
-    title: 'Hành Trình Cộng Hòa',
-    author: 'Nguyễn Thị Hải Miên',
-    year: '1955-1975',
+    // --- BOOK METADATA ---
+    // This section defines the overall book that will be displayed in the library.
+    id: 'history-vnr-1954-1975',
+    title: 'Lãnh Đạo Cách Mạng (1954 - 1975)',
+    author: 'Lịch sử Đảng Cộng sản Việt Nam',
+    year: '1954-1975',
     category: 'history',
-    progress: 62,
-    highlightTag: 'Nổi bật',
-    synopsis: 'Ghi chép từ những cuộc họp kín đến đời sống thường nhật trong hai thập niên cộng hòa.',
-    featuredQuote: 'Chúng tôi học cách yêu thành phố bằng ánh đèn neon và những phiên chợ sáng.',
-    coverColor: '#DA291C',
-    accentColor: '#FFCD00',
-    readingTimeMinutes: 52,
+    progress: 0, // Initial progress is set to 0 for a new book.
+    highlightTag: 'Toàn Tập',
+    synopsis: 'Tổng quan về sự lãnh đạo của Đảng trong công cuộc xây dựng CNXH ở miền Bắc và kháng chiến chống Mỹ, giải phóng miền Nam, thống nhất đất nước.',
+    featuredQuote: 'Chống Mỹ cứu nước là nhiệm vụ thiêng liêng nhất của cả dân tộc từ Nam chí Bắc.',
+    coverColor: '#DA291C', // Inspired by the national flag color.
+    accentColor: '#FFCD00', // Inspired by the national flag color.
+    readingTimeMinutes: 120, // Estimated total reading time in minutes.
     chapters: [
+      // --- CHAPTER 1: 1954 - 1960 ---
+      // Corresponds to section II.1 in the source text.
       {
-        id: 'history-lsvnr-1',
-        title: 'Khởi nguyên 1955',
-        featuredQuote: 'Một nền cộng hòa ra đời từ cả quyết lẫn do dự.',
+        id: 'chapter-1954-1960',
+        title: 'Giai đoạn 1954 - 1960',
+        featuredQuote: 'Chuyển cách mạng miền Nam từ thế giữ gìn lực lượng sang thế tiến công.',
         backgroundImage: defaultBackground,
-        content: `Sau cuộc trưng cầu dân ý năm 1955, nền cộng hòa non trẻ bắt đầu định hình những cơ quan đầu tiên. Các phòng ban dân sự được tái cấu trúc với mục tiêu hiện đại hóa, song vẫn giữ nếp sống truyền thống của miền Nam. Những phiên họp kéo dài đến rạng sáng tại dinh Norodom đặt nền cho hệ thống hành chính mới.
+        content: `**Bối cảnh lịch sử**
 
-Trên các đại lộ Sài Gòn, sinh viên trường Hành chánh đi lại với tập hồ sơ dưới tay, thuộc lòng những giáo trình mới phiên dịch từ tiếng Pháp. Họ được kỳ vọng trở thành lớp cán bộ kiến tạo tương lai, dù chính họ vẫn đang học cách cân bằng giữa khuôn mẫu phương Tây và tâm thức làng xã.
+Sau Hiệp định Genève, đất nước tạm thời bị chia cắt làm hai miền với hai chế độ chính trị khác nhau. Miền Bắc tiến lên chủ nghĩa xã hội, miền Nam vẫn chịu ách thống trị của đế quốc Mỹ và tay sai. Kẻ thù là đế quốc Mỹ hùng mạnh, âm mưu bá chủ thế giới. Tuy nhiên, miền Bắc được hoàn toàn giải phóng, làm căn cứ địa hậu phương cho cả nước.
 
-Bên ngoài đô thị, chương trình ấp chiến lược thử nghiệm tạo nên những cuộc di dời, khiến nông dân vừa hy vọng vừa hoang mang. Lý tưởng cộng hòa vì vậy được hình thành từ cả khát vọng lẫn những điều chỉnh liên tục trong đời sống thực tế.`,
+**Chiến lược củng cố miền Bắc**
+
+Các hội nghị Trung ương lần thứ 7 (3/1955) và lần thứ 8 (8/1955) nhận định: Muốn chống Mỹ, củng cố hòa bình, thực hiện thống nhất, điều cốt lõi là củng cố miền Bắc, đồng thời giữ vững và đẩy mạnh đấu tranh ở miền Nam.
+
+**Cải cách ruộng đất**
+
+Đến tháng 7/1956, cải cách ruộng đất căn bản hoàn thành. Hơn 9 triệu người trong hơn 2 triệu hộ được chia hơn 810.000 ha ruộng đất. Chế độ chiếm hữu ruộng đất phong kiến bị xóa bỏ hoàn toàn. Tuy nhiên, đã phạm sai lầm: cường điệu hóa đấu tranh giai cấp, mở rộng quá mức đối tượng, xử lý oan nhiều cán bộ đảng viên tốt.
+
+**Các hội nghị và kế hoạch phát triển**
+
+- Hội nghị lần thứ 13 (12/1956): Đề ra nhiệm vụ soạn thảo đường lối cách mạng giai đoạn mới
+- Hội nghị lần thứ 14 (11/1957): Đề ra kế hoạch 3 năm phát triển kinh tế-văn hóa và cải tạo XHCN (1958-1960)
+- Hội nghị lần thứ 16 (4/1959): Thông qua nghị quyết về hợp tác hóa nông nghiệp và cải tạo công thương nghiệp tư bản tư doanh
+
+**Tình hình miền Nam**
+
+Tại miền Nam, với sự hậu thuẫn của Mỹ, Ngô Đình Diệm thiết lập chính quyền độc tài, từ chối tổ chức tổng tuyển cử. Chế độ Diệm thực hiện chính sách khủng bố "Tố cộng diệt cộng", bắt bớ giết hại cán bộ cách mạng tàn khốc.
+
+**Mở đường Trường Sơn**
+
+Trước tình hình đó, Hội nghị lần thứ 15 (1/1959) đã ra quyết định lịch sử, mở đường Trường Sơn để chi viện miền Nam. Đường vận tải trên bộ mang tên đường 559, trên biển mang tên đường 759.
+
+**Phong trào "Đồng khởi"**
+
+Phong trào "Đồng khởi", bắt đầu từ Bến Tre ngày 17/1/1960, đã tạo ra một bước ngoặt chiến lược, chuyển cách mạng miền Nam từ thế phòng thủ sang thế tiến công. Nhân dân đồng loạt nổi dậy, phá tan ấp chiến lược, giành chính quyền. Đến cuối năm 1960, phong trào làm tan rã cơ cấu chính quyền cơ sở địch ở nhiều vùng.
+
+Thắng lợi này dẫn đến sự ra đời của Mặt trận Dân tộc Giải phóng miền Nam Việt Nam vào ngày 20/12/1960 tại Tân Lập, Tây Ninh.`,
       },
+      // --- CHAPTER 2: 1961 - 1965 ---
+      // Corresponds to section II.2 in the source text.
       {
-        id: 'history-lsvnr-2',
-        title: 'Hạ tầng và nhịp thở đô thị',
-        featuredQuote: 'Nhịp xe lam, mùi xăng mới và tiếng hát trên vỉa hè cùng viết nên bức tranh đô thị.',
+        id: 'chapter-1961-1965',
+        title: 'Giai đoạn 1961 - 1965',
+        featuredQuote: 'Đại hội xây dựng chủ nghĩa xã hội ở miền Bắc và đấu tranh hòa bình thống nhất nước nhà.',
         backgroundImage: defaultBackground,
-        content: `Những cây cầu bê tông nối khu trung tâm với vùng Chợ Lớn hoàn thành trong thời gian kỷ lục. Đường Nguyễn Huệ khoác lên đèn điện mới, rạp hát Đại Nam thay áo vàng son với bảng hiệu đèn đỏ rực rỡ. Chính quyền xem hạ tầng là tuyên ngôn của sự tiến bộ.
+        content: `**Đại hội đại biểu toàn quốc lần thứ III của Đảng (9/1960)**
 
-Sài Gòn cũng trở thành phòng thí nghiệm văn hóa đại chúng, khi các đài phát thanh tư nhân được cấp phép. Mỗi buổi tối, người dân vặn radio nghe bản tin và những ca khúc mới nhất, vừa nghe vừa ghi chú bằng bút mực tím.
+Đại hội họp tháng 9/1960 với 525 đại biểu chính thức và 51 đại biểu dự khuyết. Chủ tịch Hồ Chí Minh nêu rõ: "Đại hội lần này là Đại hội xây dựng chủ nghĩa xã hội ở miền Bắc và đấu tranh hòa bình thống nhất nước nhà".
 
-Trong khi đó, các tỉnh miền Trung tranh thủ nguồn ngân sách để mở rộng thương cảng và trường học. Sự chênh lệch giữa đô thị và nông thôn vẫn còn, nhưng đường lộ mới giúp tin tức và hàng hóa đi nhanh hơn, tạo nên một mạng lưới kinh tế gắn kết hơn.`,
+**Đường lối chiến lược hai nhiệm vụ**
+
+Đại hội xác định hai nhiệm vụ chiến lược:
+- Một là: Đẩy mạnh cách mạng xã hội chủ nghĩa ở miền Bắc
+- Hai là: Tiến hành cách mạng dân tộc dân chủ nhân dân ở miền Nam, thực hiện thống nhất nước nhà
+
+Cách mạng XHCN ở miền Bắc giữ vai trò quyết định đối với sự phát triển cách mạng Việt Nam, trong khi cách mạng miền Nam có tác dụng quyết định trực tiếp đối với sự nghiệp giải phóng miền Nam.
+
+**Xây dựng chủ nghĩa xã hội ở miền Bắc**
+
+Đường lối chung thời kỳ quá độ: Đoàn kết toàn dân, phát huy truyền thống, đưa miền Bắc tiến nhanh, tiến mạnh, tiến vững chắc lên CNXH.
+
+Phương hướng cơ bản:
+- Cải tạo XHCN đối với nông nghiệp, thủ công nghiệp, công thương nghiệp tư bản tư doanh
+- Phát triển kinh tế quốc doanh
+- Công nghiệp hóa XHCN: Ưu tiên phát triển công nghiệp nặng hợp lý, đồng thời phát triển nông nghiệp và công nghiệp nhẹ
+- Đẩy mạnh cách mạng tư tưởng, văn hóa, kỹ thuật
+
+**Các kế hoạch nhà nước**
+
+- Thời kỳ 1954-1957: Khôi phục kinh tế và bước đầu củng cố miền Bắc
+- Kế hoạch 3 năm (1958-1960): Phát triển kinh tế-văn hóa và cải tạo XHCN
+- Kế hoạch 5 năm lần thứ nhất (1961-1965): Xây dựng cơ sở vật chất kỹ thuật của CNXH
+
+**Chiến lược "chiến tranh đặc biệt" của Mỹ**
+
+Tổng thống Kennedy đề ra chiến lược "chiến tranh đặc biệt": Quân nguỵ + vũ khí Mỹ + cố vấn Mỹ. Âm mưu tiêu diệt phong trào tiến công và nổi dậy ở miền Nam.
+
+Mỹ tăng cường bình định, lập ấp chiến lược để tách dân ra khỏi cách mạng. Dự kiến thành lập 17.000 ấp chiến lược, coi đây là chương trình xương sống.
+
+**Chủ trương của ta**
+
+Tháng 1/1961 và tháng 2/1962, Bộ Chính trị ra chỉ thị về "Phương hướng và nhiệm vụ công tác trước mắt của cách mạng miền Nam". Giữ vững thế chiến lược tiến công đã giành được từ sau phong trào Đồng khởi.
+
+- Đẩy mạnh đấu tranh vũ trang song song với đấu tranh chính trị
+- Tiến công địch trên cả 3 vùng chiến lược: nông thôn rừng núi, nông thôn đồng bằng, thành thị
+
+**Các chiến thắng vang dội**
+
+Chiến thắng Ấp Bắc (Mỹ Tho) ngày 2/1/1963 đã chứng minh sức mạnh và hiệu quả của đấu tranh vũ trang kết hợp chính trị và binh vận. Cả miền Nam dấy lên phong trào "Thi đua Ấp Bắc giết giặc lập công".
+
+Phong trào phá ấp chiến lược diễn ra mạnh mẽ. Mỹ-nguỵ chỉ xây dựng được 1/3 trong số 17.000 ấp dự định.
+
+Ngày 1/11/1963, Mỹ đảo chính lật đổ anh em Diệm-Nhu, nhưng tình hình chính trị miền Nam vẫn bất ổn.
+
+Chiến thắng Bình Giã (Bà Rịa) tháng 12/1964, tiếp theo là các chiến thắng Ba Gia (Quảng Ngãi) và Đồng Xoài (Bình Phước) tháng 6/1965 đã làm phá sản hoàn toàn chiến lược "chiến tranh đặc biệt", buộc Mỹ phải chuyển sang "chiến tranh cục bộ".`,
       },
+      // --- CHAPTER 3: 1965 - 1975 ---
+      // Corresponds to section II.3 in the source text.
       {
-        id: 'history-lsvnr-3',
-        title: 'Ngoại giao và thử thách',
-        featuredQuote: 'Mỗi chuyến công du là bài toán giữa niềm tin đồng minh và tiếng nói người dân.',
+        id: 'chapter-1965-1975',
+        title: 'Giai đoạn 1965 - 1975',
+        featuredQuote: 'Đánh cho Mỹ cút, đánh cho Nguỵ nhào.',
         backgroundImage: defaultBackground,
-        content: `Từ cuối thập niên 1960, sổ tay ngoại giao dày lên với lịch trình tiếp đón phái đoàn quốc tế. Cờ vàng ba sọc đỏ tung bay trước các tòa đại sứ mới mở, đánh dấu vị thế của Sài Gòn trong bản đồ chiến lược Đông Nam Á.
+        content: `**Đường lối kháng chiến chống Mỹ, cứu nước**
 
-Tuy vậy, những cuộc biểu tình sinh viên phản đối tham nhũng cũng xuất hiện bên ngoài Quốc hội. Chính quyền phải tổ chức các buổi tiếp xúc cử tri, lắng nghe tiếng nói của các hội đoàn nghề nghiệp, giáo phận và cộng đồng di cư.
+Sau thất bại "chiến tranh đặc biệt", Mỹ chuyển sang "chiến tranh cục bộ", ồ ạt đưa quân viễn chinh vào miền Nam và mở rộng chiến tranh phá hoại ra miền Bắc.
 
-Khi hiệp định Paris được ký, dư âm chiến tranh vẫn len lỏi trong những quán cà phê nhỏ. Ghi chép của tác giả kết thúc bằng lời nhắc nhở rằng người dân không chỉ là nhân vật phụ của lịch sử mà là những người viết nên từng dòng của bản trường ca cộng hòa.`,
+Ban Chấp hành Trung ương Đảng họp Hội nghị lần thứ 11 (3/1965) và lần thứ 12 (12/1965) để nhận định tình hình, đề ra nhiệm vụ lãnh đạo cả nước kháng chiến chống Mỹ.
+
+**Nội dung đường lối**
+
+Quyết tâm chiến lược: Đảng khẳng định có đủ điều kiện chiến thắng đế quốc Mỹ, quyết tâm toàn Đảng, toàn dân quyết đánh thắng Mỹ. "Lúc này chống Mỹ cứu nước là nhiệm vụ thiêng liêng nhất của cả dân tộc từ Nam chí Bắc".
+
+Mục tiêu chiến lược: Kiên quyết đánh bại cuộc chiến tranh xâm lược của đế quốc Mỹ, giải phóng miền Nam, bảo vệ miền Bắc, thống nhất Tổ quốc.
+
+Phương châm chiến lược: Toàn dân, toàn diện, lâu dài, tự lực cánh sinh, dựa vào sức mình là chính.
+
+Nhiệm vụ chiến lược của hai miền:
+- Miền Bắc: Vừa chi viện sức người sức của cho tiền tuyến miền Nam, vừa xây dựng CNXH, xây dựng hậu phương vững mạnh
+- Miền Nam: Tập trung lực lượng đánh thắng chiến lược "chiến tranh cục bộ" của Mỹ
+
+**Đánh bại chiến lược "chiến tranh cục bộ" (1965-1968)**
+
+Mỹ đưa hơn 500.000 quân viễn chinh và quân chư hầu vào miền Nam. Đồng thời ném bom phá hoại miền Bắc (1965-1968). Lực lượng: Quân Mỹ + quân nguỵ + vũ khí hiện đại.
+
+Cuộc đấu tranh của nhân dân ta:
+- Miền Nam: Quân dân anh dũng chiến đấu, kết hợp đấu tranh vũ trang với đấu tranh chính trị. Nhiều chiến thắng lớn: Vạn Tường, Núi Thành, Núi Ba Đen...
+- Miền Bắc: Nhân dân kiên cường chống chiến tranh phá hoại, vừa đánh vừa xây, chi viện miền Nam với khẩu hiệu "Tất cả để đánh thắng giặc Mỹ xâm lược".
+
+**Tổng tiến công và nổi dậy Tết Mậu Thân 1968**
+
+Cuộc Tổng tiến công và nổi dậy Tết Mậu Thân (30/1/1968) là đỉnh cao của nghệ thuật quân sự và chính trị Việt Nam. Tấn công đồng loạt vào hầu hết các thành phố, thị xã, căn cứ địch.
+
+Kết quả: Chiến lược "chiến tranh cục bộ" phá sản hoàn toàn, Mỹ buộc phải tuyên bố ngừng ném bom miền Bắc (1/11/1968) và chuyển sang chiến lược "Việt Nam hóa chiến tranh".
+
+**Đánh bại chiến lược "Việt Nam hóa chiến tranh" (1969-1973)**
+
+Mỹ rút dần quân về, tăng cường cho quân đội Sài Gòn, "để người Việt đánh người Việt". Cuộc chiến tranh phá hoại lần 2 ở miền Bắc (1972).
+
+Quân dân miền Nam tiếp tục tiến công địch. Miền Bắc kiên cường chống chiến tranh phá hoại, đập tan chiến dịch "Hà Nội - Điện Biên Phủ trên không".
+
+Kết quả: Chiến lược "Việt Nam hóa chiến tranh" phá sản, buộc Mỹ phải ký Hiệp định Paris ngày 27/1/1973, công nhận độc lập, chủ quyền, thống nhất và toàn vẹn lãnh thổ Việt Nam.
+
+**Tổng tiến công và nổi dậy Mùa Xuân 1975**
+
+Sau khi Mỹ rút quân, Đảng quyết định phát động chiến dịch tổng tiến công giải phóng hoàn toàn miền Nam.
+
+Chiến dịch Hồ Chí Minh (26/4 - 30/4/1975) là đỉnh cao nghệ thuật quân sự Việt Nam, kết hợp tiến công quân sự với nổi dậy chính trị. Hơn 200.000 quân chủ lực từ nhiều hướng tiến công vào Sài Gòn.
+
+Ngày 30/4/1975, Sài Gòn được giải phóng hoàn toàn, chế độ nguỵ quyền Sài Gòn sụp đổ. Đất nước thống nhất, độc lập, toàn vẹn lãnh thổ.
+
+**Ý nghĩa lịch sử**
+
+- Kết thúc 30 năm chiến tranh, hoàn thành độc lập dân tộc và thống nhất đất nước
+- Thắng lợi của đường lối đúng đắn, sáng tạo của Đảng, của khối đại đoàn kết toàn dân tộc
+- Biểu tượng chủ nghĩa anh hùng cách mạng và đại đoàn kết dân tộc
+- Cổ vũ phong trào giải phóng dân tộc thế giới, góp phần bảo vệ hòa bình`,
       },
-    ],
-  },
-  {
-    id: 'culture-saigon',
-    title: 'Sài Gòn Ban Ngày Và Đêm',
-    author: 'Lâm Thảo Vy',
-    year: '1962',
-    category: 'culture',
-    progress: 34,
-    highlightTag: 'Đời sống',
-    synopsis: 'Một hành trình thị giác qua chợ hoa, rạp cine và những quán cà phê đèn vàng của Sài Gòn.',
-    coverColor: '#C4632B',
-    accentColor: '#FFD166',
-    readingTimeMinutes: 38,
-    chapters: [
+      // --- CHAPTER 4: LIÊN HỆ THỰC TIỄN ---
+      // Corresponds to the final section of the source text.
       {
-        id: 'culture-saigon-1',
-        title: 'Những buổi sáng ở Chợ Bến Thành',
+        id: 'chapter-lessons',
+        title: 'Bài học và Liên hệ thực tiễn',
+        featuredQuote: 'Vai trò lãnh đạo của Đảng là nhân tố quyết định mọi thắng lợi của cách mạng Việt Nam.',
         backgroundImage: defaultBackground,
-        content: `Tiếng mời chào của các cô bán vải hòa với mùi phở bò bốc khói tại cửa tây. Những chiếc xe Vespa dừng vội để người mua hoa bưng bó cúc vàng cho kịp buổi họp mặt gia đình. Chợ Bến Thành không chỉ là nơi giao thương mà còn là sân khấu của thời trang miền Nam với áo dài may đo ngay tại sạp.
+        content: `Thắng lợi vĩ đại của cuộc kháng chiến chống Mỹ, cứu nước đã để lại nhiều bài học kinh nghiệm quý báu cho công cuộc xây dựng và bảo vệ Tổ quốc hiện nay.
 
-Tác giả ghi chép chi tiết cách người mua sắm trả giá bằng giọng nhỏ nhẹ, lưu giữ nét lịch thiệp giữa chốn đông người. Dù trời tháng Năm nóng rực, mọi người vẫn giữ nụ cười hiền và câu "thưa cô" trước khi rời quầy hàng.
+**Bài học kinh nghiệm**
 
-Sau 9 giờ sáng, những xe hàng thực phẩm lên đường tới Gia Định và Tân Định, tiếp tục nuôi dưỡng nhịp sống đô thị đang mở rộng từng ngày.`,
-      },
-      {
-        id: 'culture-saigon-2',
-        title: 'Ánh đèn tối thứ bảy',
-        backgroundImage: defaultBackground,
-        content: `Đến tối, đại lộ Lê Lợi lung linh với biển hiệu neon của các rạp cine. Rạp Thống Nhất trình chiếu những bộ phim mới nhất từ Hồng Kông, trong khi rạp Rex giới thiệu các buổi hòa nhạc phòng trà. Người trẻ hẹn nhau uống cà phê sữa đá, bình luận về bản nhạc mới vừa phát trên đài Mẹ Việt Nam.
+1. Kiên định mục tiêu độc lập dân tộc gắn với chủ nghĩa xã hội
+2. Phát huy sức mạnh toàn dân tộc, khối đại đoàn kết
+3. Kết hợp đấu tranh quân sự với chính trị-ngoại giao
+4. Vai trò lãnh đạo của Đảng là nhân tố quyết định mọi thắng lợi
+5. Độc lập, tự chủ, sáng tạo trong đường lối cách mạng
 
-Trong không khí ấy, các nhà thiết kế áo dài thử nghiệm chất liệu ren và taffeta. Từng đường kim, mũi chỉ ghi dấu sự hội nhập văn hóa mà vẫn giữ dáng vẻ dịu dàng của Sài Gòn.
+**1. Tinh thần độc lập, tự chủ trong hội nhập quốc tế**
 
-Tác giả kết luận rằng Sài Gòn ban đêm là bức tranh đa sắc, nơi văn minh đô thị và nếp nhà truyền thống cùng tỏa sáng.`,
-      },
-      {
-        id: 'culture-saigon-3',
-        title: 'Những con hẻm kể chuyện',
-        backgroundImage: defaultBackground,
-        content: `Giữa khu trung tâm hoa lệ, những con hẻm nhỏ vẫn giữ được nhịp sống bình dị. Mỗi sáng, các bà cụ bày ghế nhựa, pha ấm trà mạn và kể chuyện gia đình cho hàng xóm. Tối đến, trẻ nhỏ chơi đá dĩa, còn người lớn kê bàn đánh cờ tướng.
+Bài học về độc lập, tự chủ trong kháng chiến có giá trị quan trọng với Việt Nam hiện nay. Việt Nam cần kiên định con đường xã hội chủ nghĩa, không phụ thuộc về kinh tế, chính trị vào các nước lớn. Chính sách đối ngoại thể hiện tinh thần tự chủ, chủ động, không ngả theo phe nào.
 
-Tác giả ghi lại những câu chuyện về gia đình di cư từ miền Bắc, mang theo món bánh cốm, bánh gai rồi biến tấu theo khẩu vị miền Nam. Con hẻm vì vậy trở thành kho ký ức tập thể, nơi lịch sử được kể bằng giọng kể thân tình.
+**2. Sức mạnh đại đoàn kết toàn dân tộc**
 
-Nhờ sự đùm bọc ấy, Sài Gòn giữ được cảm giác gần gũi ngay cả khi mật độ dân cư tăng nhanh và các tòa chung cư mọc lên liên tiếp.`,
-      },
-    ],
-  },
-  {
-    id: 'music-songvang',
-    title: 'Tiếng Hát Vằng Vặc',
-    author: 'Phạm Duy An',
-    year: '1969',
-    category: 'music',
-    progress: 80,
-    highlightTag: 'Âm nhạc vàng',
-    synopsis: 'Bút ký phòng thu, ghi chép hòa âm và hậu trường các đêm nhạc tình ca miền Nam.',
-    featuredQuote: 'Giữa phòng thu nhỏ, tiếng guitar gỗ và nhịp tim của ca sĩ hòa làm một.',
-    coverColor: '#8C2136',
-    accentColor: '#F2A65A',
-    readingTimeMinutes: 44,
-    chapters: [
-      {
-        id: 'music-songvang-1',
-        title: 'Phòng thu Nguyễn Du',
-        content: `Buổi chiều mưa nhẹ, nhạc sĩ tụ họp tại phòng thu nhỏ trên đường Nguyễn Du. Những cuộn băng từ quay đều khi ca sĩ thử giọng, chỉnh từng nốt ngân. Tác giả ghi lại cách nhóm hòa âm sử dụng đàn guitar Hawaii và organ Farfisa để tạo nên chất âm lãng mạn.
+Khối đại đoàn kết toàn dân tộc là nguồn sức mạnh để giành thắng lợi. Hiện nay, Đảng tiếp tục phát huy truyền thống này thông qua Mặt trận Tổ quốc Việt Nam. Đoàn kết toàn dân là chìa khóa để phát triển kinh tế, bảo vệ chủ quyền biển đảo, đấu tranh chống "diễn biến hòa bình".
 
-Mỗi bài hát được luyện tập kỹ lưỡng, từ cách lên hơi cho tới dấu luyến cuối câu. Bên ngoài cánh cửa phòng thu, người hâm mộ đứng chờ để xin chữ ký, tạo nên bầu không khí vừa chuyên nghiệp vừa thân mật.
+**3. Xây dựng và bảo vệ Tổ quốc trong kỷ nguyên mới**
 
-Khi bản thu hoàn tất, mọi người cùng nhau nghe lại trong ánh đèn vàng ấm, đánh dấu khoảnh khắc ra đời của một ca khúc đi vào ký ức nhiều thế hệ.`,
-      },
-      {
-        id: 'music-songvang-2',
-        title: 'Sân khấu phòng trà',
-        content: `Phòng trà Tự Do mở cửa từ 19 giờ, ánh đèn spotlight dịu nhẹ phủ lên sân khấu nhỏ. Dàn nhạc ba người với trống jazz, bass và piano điện sẵn sàng nhập cuộc. Khán giả là sĩ quan, sinh viên và giới nghệ sĩ, tất cả đều im lặng khi ca sĩ cầm micro.
+Bài học "vừa xây vừa đánh" được vận dụng sáng tạo: vừa phát triển kinh tế, vừa tăng cường quốc phòng-an ninh. Việt Nam hiện đại hóa quân đội, xây dựng nền quốc phóng toàn dân, sẵn sàng bảo vệ vững chắc độc lập, chủ quyền. Đồng thời tích cực tham gia các diễn đàn quốc tế, mở rộng hợp tác.
 
-Tác giả mô tả cách từng bài hát được giới thiệu bằng câu chuyện ngắn, khiến khán phòng trở thành nơi chia sẻ cảm xúc chân thành. Khi giai điệu kết thúc, tiếng vỗ tay vang dài như lời cảm ơn cho khoảnh khắc hiếm hoi bình yên giữa thời cuộc.
+Khẩu hiệu "Tất cả để đánh thắng giặc Mỹ xâm lược" trong thời kỳ kháng chiến nay được vận dụng thành tinh thần "Tất cả để xây dựng và bảo vệ Tổ quốc Việt Nam xã hội chủ nghĩa".
 
-Sau buổi diễn, những bản ký âm được gấp gọn vào cặp da, chờ chuyến lưu diễn tiếp theo sang Biên Hòa và Vũng Tàu.`,
-      },
-      {
-        id: 'music-songvang-3',
-        title: 'Băng nhạc và đài sóng',
-        content: `Sự xuất hiện của băng cassette mở ra kỷ nguyên mới cho âm nhạc miền Nam. Các hãng phát hành tranh thủ phát hành bản thu trong vòng vài ngày, đưa tiếng hát vươn xa đến tận vùng nông thôn.
+**4. Vai trò lãnh đạo của Đảng - Nhân tố quyết định**
 
-Đài phát thanh Sài Gòn thiết lập chương trình "Gửi từ miền nhớ", nơi thính giả gọi tới yêu cầu ca khúc dành tặng người thân ở tiền tuyến. Mỗi lá thư được người dẫn chương trình đọc lên như một bài thơ.
+Vai trò lãnh đạo của Đảng là nhân tố quyết định mọi thắng lợi của cách mạng Việt Nam. Trong thời kỳ đổi mới, Đảng tiếp tục khẳng định vai trò lãnh đạo toàn diện, xây dựng Đảng trong sạch vững mạnh, chống tham nhũng, tiêu cực. 
 
-Nhờ vậy, âm nhạc vàng không chỉ là sản phẩm giải trí mà còn là sợi dây nối dài tình cảm giữa những gia đình xa cách.`,
-      },
-    ],
-  },
-  {
-    id: 'literature-duongpho',
-    title: 'Những Bản Thảo Ngoài Hiên',
-    author: 'Bảo Châu',
-    year: '1971',
-    category: 'literature',
-    progress: 18,
-    synopsis: 'Tuyển tập bài viết ngắn đăng trên các tạp chí văn chương Sài Gòn đầu thập niên 1970.',
-    coverColor: '#5A6B4E',
-    accentColor: '#C9D36A',
-    readingTimeMinutes: 29,
-    chapters: [
-      {
-        id: 'literature-duongpho-1',
-        title: 'Truyện dài ngoài hiên mưa',
-        content: `Tạp chí Bách Khoa đăng tải chuỗi truyện ngắn của Bảo Châu, nơi nhân vật chính là những người phụ nữ giữ cửa tiệm sách cũ. Họ ghi sổ tay bằng mực tím, kể về những độc giả ghé thăm rồi biến mất cùng câu chuyện riêng.
-
-Giọng văn nhẹ nhàng nhưng sắc sảo, phản ánh sự thay đổi vai trò của phụ nữ đô thị trong giai đoạn công thương nghiệp bùng nổ. Họ vừa quản lý sổ sách, vừa là người giữ gìn ký ức gia đình.
-
-Mỗi trang truyện kết thúc bằng một đoạn thơ lục bát mới chuyển thể, thêm vào hơi thở dân gian cho câu chuyện hiện đại.`,
-      },
-      {
-        id: 'literature-duongpho-2',
-        title: 'Bàn tròn văn nghệ',
-        content: `Các tạp chí văn nghệ tổ chức bàn tròn tại quán cà phê La Pagode vào mỗi cuối tuần. Nhà văn trẻ, họa sĩ và nhà báo cùng tranh luận về chủ nghĩa hiện sinh, về việc liệu văn chương nên lên tiếng như thế nào trước biến động thời cuộc.
-
-Bảo Châu ghi lại chi tiết từng cái gật đầu, tràng cười và cả những phút giây im lặng. Những cuộc đối thoại ấy cho thấy tinh thần tự do học thuật mà giới sáng tác miền Nam theo đuổi.
-
-Bài viết kết thúc bằng thông điệp rằng mọi sáng tạo cần được cất giữ, bởi mỗi bản thảo là tấm vé trở về ký ức của thành phố.`,
-      },
-      {
-        id: 'literature-duongpho-3',
-        title: 'Tin tức văn đàn',
-        content: `Chuyên mục tin ngắn giới thiệu sách mới phát hành, từ tiểu thuyết trinh thám đến tuyển thơ tôn giáo. Mỗi tựa sách được tóm tắt bằng vài câu, kèm địa chỉ nhà sách dọc đường Lê Lợi và Phạm Ngũ Lão.
-
-Tác giả cũng không quên nhắc đến những chương trình đọc sách cho trẻ em tại thư viện Gia Long, góp phần nuôi dưỡng thói quen đọc trong cộng đồng.
-
-Qua góc nhìn của Bảo Châu, đời sống văn chương Sài Gòn hiện ra sinh động, đa sắc, và đầy ắp sự hứng khởi sáng tạo.`,
-      },
-    ],
-  },
-  {
-    id: 'press-songthan',
-    title: 'Nhật Báo Sông Thần',
-    author: 'Huỳnh Tố Ngọc',
-    year: '1973',
-    category: 'press',
-    progress: 71,
-    highlightTag: 'Tư liệu',
-    synopsis: 'Hậu trường tòa soạn, quy trình in ấn và những bản tin nóng của một nhật báo Sài Gòn.',
-    coverColor: '#3F546C',
-    accentColor: '#9DC0F4',
-    readingTimeMinutes: 36,
-    chapters: [
-      {
-        id: 'press-songthan-1',
-        title: '5 giờ sáng tại tòa soạn',
-        content: `Khi Sài Gòn còn chìm trong sương, tiếng máy sắp chữ đã vang lên tại nhà in tòa soạn Sông Thần. Phóng viên trở về từ ca đêm gõ vội hàng tít, trong khi biên tập viên rà soát từng dòng để tránh sai sót.
-
-Tác giả mô tả cách mực in được pha màu, cách những tờ giấy lớn chạy qua dây chuyền press rồi xếp chồng gọn gàng. Mỗi số báo phải hoàn tất trước khi ánh bình minh chạm vào mái nhà.
-
-Nhờ tinh thần làm việc ấy, tờ báo kịp chuyển tới tay độc giả ở Chợ Lớn, Cần Thơ và cả những đơn vị tuyến đầu chỉ trong vài giờ.`,
-      },
-      {
-        id: 'press-songthan-2',
-        title: 'Phóng viên chiến trường',
-        content: `Những chiếc trực thăng chở phóng viên tới vùng ngoại ô, nơi cuộc chiến diễn ra âm ỉ. Họ mang theo máy ảnh Leica và sổ tay chống nước, sẵn sàng ghi lại bất cứ điều gì họ chứng kiến.
-
-Tòa soạn đặt ra nguyên tắc rằng mỗi bài viết phải cân bằng giữa sự thật và sự an ủi. Người đọc cần biết điều gì đang xảy ra, nhưng cũng cần hy vọng rằng ngày mai sẽ tốt hơn.
-
-Bài viết kể lại câu chuyện của một phóng viên trẻ, người đã dùng chính lương của mình để hỗ trợ gia đình nạn nhân, rồi quay lại bàn phím để hoàn thành bài tường thuật.`,
-      },
-      {
-        id: 'press-songthan-3',
-        title: 'Phát hành và độc giả',
-        content: `Sau khi báo in xong, đội ngũ phát hành tỏa đi khắp các quận bằng xe Vespa. Họ thuộc tên từng người bán báo đầu hẻm, biết rõ ai thích đọc mục kinh tế, ai chờ trang văn nghệ.
-
-Nhật báo Sông Thần còn tổ chức chuyên mục "Thư độc giả", nơi các cô giáo, kỹ sư, và cả sinh viên gửi bài phản hồi. Những dòng chữ ấy giúp tòa soạn điều chỉnh cách đưa tin, khiến tờ báo trở thành diễn đàn mở.
-
-Chính nhờ mạng lưới này, thông tin được lan tỏa nhanh chóng, giữ cho người dân cảm nhận được họ là một phần của cộng đồng đang thay đổi từng ngày.`,
+Kinh nghiệm lãnh đạo linh hoạt, sáng tạo trong kháng chiến - thể hiện qua việc điều chỉnh chiến lược phù hợp với từng giai đoạn - được vận dụng vào công cuộc công nghiệp hóa, hiện đại hóa đất nước và hội nhập quốc tế sâu rộng.`,
       },
     ],
   },
