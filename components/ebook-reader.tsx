@@ -3,7 +3,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Dimensions,
-  FlatList,
   Image,
   ImageBackground,
   Modal,
@@ -13,17 +12,13 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
 import Markdown from 'react-native-markdown-display';
 import Animated, {
-  Easing,
-  runOnJS,
   useAnimatedStyle,
   useSharedValue,
-  withDelay,
   withSpring,
-  withTiming
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -34,12 +29,9 @@ import { LibraryBook, MediaItem, TimelineEvent } from '@/types/library';
 import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
 
-// Reanimated versions of components for animation
-const AnimatedImageBackground = Animated.createAnimatedComponent(ImageBackground);
 const AnimatedView = Animated.createAnimatedComponent(View);
 const AnimatedText = Animated.createAnimatedComponent(ThemedText);
 
-// Interface for the color palette applied to the reader theme
 interface ReaderPalette {
   pageBackground: string;
   textColor: string;
@@ -51,13 +43,11 @@ interface ReaderPalette {
   textShadow: string;
 }
 
-// Constants for pagination and font sizing
 const BASE_WORDS_PER_PAGE = 190;
 const WORDS_PER_PAGE_MIN = 90;
 const FONT_SIZE_ADJUSTMENT = 9;
-const { width: SCREEN_WIDTH, height: screenHeight } = Dimensions.get('window');
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-// Function to paginate content based on word count and font size
 const paginateContent = (content: string, fontSize: number): string[] => {
   const cleanContent = content.replace(/\s+/g, ' ').trim();
   if (!cleanContent) return [''];
@@ -102,43 +92,6 @@ const TimelineViewer = memo(({
 ));
 TimelineViewer.displayName = 'TimelineViewer';
 
-const ArtbookTextViewer = memo(({ title, description, caption }: { title?: string; description?: string; caption?: string }) => {
-  const titleOpacity = useSharedValue(0);
-  const titleTranslateY = useSharedValue(20);
-  const descOpacity = useSharedValue(0);
-  const descTranslateY = useSharedValue(20);
-  const captionOpacity = useSharedValue(0);
-
-  useEffect(() => {
-    titleOpacity.value = withDelay(300, withTiming(1));
-    titleTranslateY.value = withDelay(300, withTiming(0, { duration: 400, easing: Easing.out(Easing.cubic) }));
-    descOpacity.value = withDelay(450, withTiming(1));
-    descTranslateY.value = withDelay(450, withTiming(0, { duration: 400, easing: Easing.out(Easing.cubic) }));
-    captionOpacity.value = withDelay(600, withTiming(1));
-  }, []);
-
-  const titleStyle = useAnimatedStyle(() => ({
-    opacity: titleOpacity.value,
-    transform: [{ translateY: titleTranslateY.value }],
-  }));
-  const descStyle = useAnimatedStyle(() => ({
-    opacity: descOpacity.value,
-    transform: [{ translateY: descTranslateY.value }],
-  }));
-  const captionStyle = useAnimatedStyle(() => ({
-    opacity: captionOpacity.value,
-  }));
-
-  return (
-    <>
-      {title && <AnimatedText style={[styles.artbookTitle, titleStyle]}>{title}</AnimatedText>}
-      {description && <AnimatedText style={[styles.artbookDescription, descStyle]}>{description}</AnimatedText>}
-      {caption && <AnimatedText style={[styles.artbookCaption, captionStyle]}>"{caption}"</AnimatedText>}
-    </>
-  );
-});
-ArtbookTextViewer.displayName = 'ArtbookTextViewer';
-
 interface EBookReaderProps {
   book: LibraryBook;
   onChapterChange?: (chapterIndex: number) => void;
@@ -150,15 +103,12 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
   const { readerTheme, fontSize } = useReaderPreferences();
   const pageScrollViewRef = useRef<ScrollView>(null);
   const chapterScrollViewRef = useRef<ScrollView>(null);
-  const galleryRef = useRef<FlatList>(null);
   const slideTranslateX = useSharedValue(0);
   const insets = useSafeAreaInsets();
 
   const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
   const [mediaModalVisible, setMediaModalVisible] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-  const modalProgress = useSharedValue(0);
 
   const readerPalettes = useMemo<Record<ReaderThemeKey, ReaderPalette>>(
     () => ({
@@ -250,53 +200,33 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
       setSelectedMedia(mediaItem);
       setCurrentImageIndex(0);
       setMediaModalVisible(true);
-      modalProgress.value = withTiming(1, { duration: 500, easing: Easing.out(Easing.cubic) });
     }
   };
 
   const handleCloseModal = () => {
-    modalProgress.value = withTiming(0, { duration: 400 }, (finished) => {
-      if (finished) {
-        runOnJS(setMediaModalVisible)(false);
-        runOnJS(setSelectedMedia)(null);
-      }
-    });
+    setMediaModalVisible(false);
+    setSelectedMedia(null);
+    setCurrentImageIndex(0);
   };
 
   const goToNextImage = () => {
-    if (selectedMedia?.type === 'gallery' && currentImageIndex < (selectedMedia.items.length - 1)) {
-      const nextIndex = currentImageIndex + 1;
-      galleryRef.current?.scrollToIndex({ index: nextIndex, animated: true });
-      setCurrentImageIndex(nextIndex);
+    if (selectedMedia && currentImageIndex < selectedMedia.items.length - 1) {
+      setCurrentImageIndex(prev => prev + 1);
     }
   };
 
   const goToPrevImage = () => {
     if (currentImageIndex > 0) {
-      const prevIndex = currentImageIndex - 1;
-      galleryRef.current?.scrollToIndex({ index: prevIndex, animated: true });
-      setCurrentImageIndex(prevIndex);
+      setCurrentImageIndex(prev => prev - 1);
     }
   };
-
-  const artbookBgImage = useMemo(() => {
-    if (!selectedMedia) return null;
-    if (selectedMedia.type === 'image' || selectedMedia.type === 'gallery') {
-      return (selectedMedia.items as any[])[currentImageIndex];
-    }
-    return null;
-  }, [selectedMedia, currentImageIndex]);
-
-  const artbookOverlayAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: modalProgress.value,
-  }));
-  const artbookBgAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: 1 + (1 - modalProgress.value) * 0.1 }],
-  }));
 
   const chapterContainerAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: slideTranslateX.value }],
   }));
+
+  // Get current image to display
+  const currentImage = selectedMedia?.items[currentImageIndex];
 
   return (
     <ThemedView style={styles.container}>
@@ -327,7 +257,7 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
         })}
       </ScrollView>
 
-      {/* Chapter Content with spring animation */}
+      {/* Chapter Content */}
       <AnimatedView style={[styles.chapterContainer, chapterContainerAnimatedStyle]}>
         <ScrollView
           ref={pageScrollViewRef}
@@ -406,81 +336,91 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
         </ScrollView>
       </AnimatedView>
 
-      {/* Art Book Media Viewer Modal with corrected layout */}
-      <Modal visible={mediaModalVisible} transparent animationType="none" onRequestClose={handleCloseModal}>
-        <AnimatedView style={[styles.artbookOverlay, artbookOverlayAnimatedStyle]}>
-          <AnimatedImageBackground source={artbookBgImage} style={[styles.artbookImageBackground, artbookBgAnimatedStyle]} resizeMode="cover" blurRadius={25}>
-            <LinearGradient colors={['rgba(0,0,0,0.2)', 'rgba(0,0,0,0.8)']} style={StyleSheet.absoluteFill} />
-            <SafeAreaView style={styles.artbookSafeArea}>
-              {/* This container ensures content is centered and stacked correctly */}
-              <View style={styles.artbookCenteredContainer}>
-                {/* Gallery or Timeline */}
-                <View style={styles.artbookContent}>
-                  {selectedMedia?.type === 'timeline' ? (
-                    <ScrollView>
-                      <ThemedText style={styles.artbookTitle}>{selectedMedia.title}</ThemedText>
-                      <TimelineViewer events={selectedMedia.items as TimelineEvent[]} palette={readerPalettes.night} />
-                    </ScrollView>
-                  ) : (
-                    <FlatList
-                      ref={galleryRef}
-                      data={selectedMedia?.items as any[] ?? []}
-                      horizontal
-                      pagingEnabled
-                      showsHorizontalScrollIndicator={false}
-                      onMomentumScrollEnd={(e) => {
-                        const index = Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH);
-                        runOnJS(setCurrentImageIndex)(index);
-                      }}
-                      renderItem={({ item }) => (
-                        <View style={styles.artbookGalleryItem}>
-                          <Image source={item} style={styles.artbookGalleryImage} resizeMode="contain" />
-                        </View>
-                      )}
-                      keyExtractor={(_, index) => `gallery-art-${index}`}
-                    />
-                  )}
+      {/* REDESIGNED: Simple Modal - One Image at a Time */}
+      <Modal visible={mediaModalVisible} transparent animationType="fade" onRequestClose={handleCloseModal}>
+        <View style={styles.modalOverlay}>
+          <SafeAreaView style={styles.modalSafeArea}>
+            
+            {/* Close Button - Top Right */}
+            <TouchableOpacity
+              onPress={handleCloseModal}
+              style={[styles.modalCloseButton, { top: insets.top + 10, right: 20 }]}
+            >
+              <Ionicons name="close-circle" size={44} color="rgba(255,255,255,0.95)" />
+            </TouchableOpacity>
+
+            {selectedMedia?.type === 'timeline' ? (
+              /* Timeline View */
+              <ScrollView style={styles.timelineScrollView} contentContainerStyle={{ paddingBottom: 60 }}>
+                <ThemedText style={[styles.modalTitle, { paddingHorizontal: 24, paddingTop: 20, textAlign: 'center', color: '#fff' }]}>
+                  {selectedMedia.title}
+                </ThemedText>
+                <TimelineViewer events={selectedMedia.items as TimelineEvent[]} palette={readerPalettes.night} />
+              </ScrollView>
+            ) : (
+              /* Single Image View with Info */
+              <View style={styles.singleImageContainer}>
+                {/* Main Image */}
+                <View style={styles.imageWrapper}>
+                  <Image 
+                    source={currentImage} 
+                    style={styles.mainImage} 
+                    resizeMode="contain"
+                  />
                 </View>
 
-                {/* Text overlay, positioned absolutely at the bottom */}
-                {selectedMedia?.type !== 'timeline' && (
-                  <View style={[styles.artbookFooter, { paddingBottom: insets.bottom + 10 }]}>
-                    <ArtbookTextViewer
-                      key={currentImageIndex}
-                      title={selectedMedia?.title}
-                      description={selectedMedia?.description}
-                      caption={selectedMedia?.caption}
-                    />
+                {/* Bottom Info Card */}
+                <LinearGradient
+                  colors={['transparent', 'rgba(0,0,0,0.95)']}
+                  style={[styles.infoCard, { paddingBottom: insets.bottom + 20 }]}
+                >
+                  <View style={styles.infoContent}>
+                    <ThemedText style={styles.modalTitle}>{selectedMedia?.title}</ThemedText>
+                    {selectedMedia?.description && (
+                      <ThemedText style={styles.modalDescription}>{selectedMedia.description}</ThemedText>
+                    )}
+                    {selectedMedia?.caption && (
+                      <ThemedText style={styles.modalCaption}>&quot;{selectedMedia.caption}&quot;</ThemedText>
+                    )}
+
+                    {/* Gallery Counter & Navigation */}
+                    {selectedMedia && selectedMedia.items.length > 1 && (
+                      <View style={styles.galleryControls}>
+                        <TouchableOpacity
+                          onPress={goToPrevImage}
+                          disabled={currentImageIndex === 0}
+                          style={[styles.galleryButton, currentImageIndex === 0 && styles.galleryButtonDisabled]}
+                        >
+                          <Ionicons 
+                            name="chevron-back" 
+                            size={24} 
+                            color={currentImageIndex === 0 ? 'rgba(255,255,255,0.3)' : '#fff'} 
+                          />
+                        </TouchableOpacity>
+
+                        <ThemedText style={styles.galleryCounter}>
+                          {currentImageIndex + 1} / {selectedMedia.items.length}
+                        </ThemedText>
+
+                        <TouchableOpacity
+                          onPress={goToNextImage}
+                          disabled={currentImageIndex === selectedMedia.items.length - 1}
+                          style={[styles.galleryButton, currentImageIndex === selectedMedia.items.length - 1 && styles.galleryButtonDisabled]}
+                        >
+                          <Ionicons 
+                            name="chevron-forward" 
+                            size={24} 
+                            color={currentImageIndex === selectedMedia.items.length - 1 ? 'rgba(255,255,255,0.3)' : '#fff'} 
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    )}
                   </View>
-                )}
+                </LinearGradient>
               </View>
-
-              {/* Controls remain outside the centered container for edge placement */}
-              <TouchableOpacity onPress={handleCloseModal} style={[styles.artbookCloseButton, { top: insets.top, right: insets.right + 15 }]}>
-                <Ionicons name="close-circle" size={36} color="rgba(255,255,255,0.8)" />
-              </TouchableOpacity>
-
-              {selectedMedia?.type === 'gallery' && selectedMedia.items.length > 1 && (
-                <>
-                  <TouchableOpacity
-                    onPress={goToPrevImage}
-                    style={[styles.artbookNavArrow, styles.artbookNavPrev, { left: insets.left + 10 }]}
-                    disabled={currentImageIndex === 0}
-                  >
-                    <Ionicons name="chevron-back-circle" size={40} color={currentImageIndex === 0 ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.7)'} />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={goToNextImage}
-                    style={[styles.artbookNavArrow, styles.artbookNavNext, { right: insets.right + 10 }]}
-                    disabled={currentImageIndex === selectedMedia.items.length - 1}
-                  >
-                    <Ionicons name="chevron-forward-circle" size={40} color={currentImageIndex === selectedMedia.items.length - 1 ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.7)'} />
-                  </TouchableOpacity>
-                </>
-              )}
-            </SafeAreaView>
-          </AnimatedImageBackground>
-        </AnimatedView>
+            )}
+          </SafeAreaView>
+        </View>
       </Modal>
 
       {/* Footer */}
@@ -550,97 +490,137 @@ const styles = StyleSheet.create({
   progressText: { fontSize: 11, fontWeight: '500' },
   progressBadge: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8 },
   progressPercent: { fontSize: 10, fontWeight: '700' },
-  // Art Book Modal styles
-  artbookOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    justifyContent: 'center',
-    alignItems: 'center',
+
+  // REDESIGNED Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.98)',
   },
-  artbookImageBackground: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    alignItems: 'center',
+  modalSafeArea: {
+    flex: 1,
   },
-  artbookSafeArea: {
+  modalCloseButton: {
+    position: 'absolute',
+    zIndex: 200,
+  },
+  timelineScrollView: {
     flex: 1,
     width: '100%',
   },
-  artbookCenteredContainer: {
+  singleImageContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  imageWrapper: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  artbookCloseButton: {
-    position: 'absolute',
-    zIndex: 10,
-  },
-  artbookContent: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  artbookGalleryItem: {
-    width: SCREEN_WIDTH,
-    height: screenHeight,
-    justifyContent: 'center',
-    alignItems: 'center',
-    // FIX: Removed horizontal padding to ensure item is full screen width
-  },
-  artbookGalleryImage: {
-    width: '100%', // Take up full width of the item
-    height: '80%', // Allow some vertical breathing room
-  },
-  artbookFooter: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
+    paddingVertical: 80,
     paddingHorizontal: 20,
-    paddingTop: 40,
-    gap: 8,
   },
-  artbookTitle: {
-    fontSize: 24, fontWeight: 'bold', color: '#fff', textShadowColor: 'rgba(0, 0, 0, 0.75)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 5,
+  mainImage: {
+    width: SCREEN_WIDTH - 40,
+    height: SCREEN_HEIGHT * 0.6,
   },
-  artbookDescription: {
-    fontSize: 15, color: 'rgba(255, 255, 255, 0.9)', lineHeight: 22, textShadowColor: 'rgba(0, 0, 0, 0.75)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3,
+  infoCard: {
+    paddingTop: 60,
+    paddingHorizontal: 24,
   },
-  artbookCaption: {
-    fontSize: 13, color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic', marginTop: 8,
+  infoContent: {
+    gap: 12,
   },
-  artbookNavArrow: {
-    position: 'absolute', top: '50%', marginTop: -20, zIndex: 10,
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#fff',
+    textShadowColor: 'rgba(0, 0, 0, 0.8)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 6,
   },
-  artbookNavPrev: {},
-  artbookNavNext: {},
+  modalDescription: {
+    fontSize: 15,
+    color: 'rgba(255, 255, 255, 0.95)',
+    lineHeight: 22,
+  },
+  modalCaption: {
+    fontSize: 13,
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontStyle: 'italic',
+  },
+  galleryControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 20,
+    marginTop: 16,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.2)',
+  },
+  galleryButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  galleryButtonDisabled: {
+    opacity: 0.3,
+  },
+  galleryCounter: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#fff',
+    minWidth: 80,
+    textAlign: 'center',
+  },
+
   // Timeline styles
   timelineContainer: {
-    paddingHorizontal: 20, paddingTop: 20, width: '100%',
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    width: '100%',
   },
   timelineEvent: {
     flexDirection: 'row',
+    marginBottom: 20,
   },
   timelineLineContainer: {
-    alignItems: 'center', width: 30,
+    alignItems: 'center',
+    width: 30,
   },
   timelineDot: {
-    width: 14, height: 14, borderRadius: 7, zIndex: 1,
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    zIndex: 1,
   },
   timelineLine: {
-    flex: 1, width: 2,
+    flex: 1,
+    width: 2,
+    marginTop: 4,
   },
   timelineContent: {
-    flex: 1, paddingLeft: 10, paddingBottom: 30,
+    flex: 1,
+    paddingLeft: 15,
+    paddingBottom: 10,
   },
   timelineImage: {
-    width: '100%', height: 180, borderRadius: 12, marginBottom: 12,
+    width: '100%',
+    height: 200,
+    borderRadius: 12,
+    marginBottom: 12,
   },
   timelineDate: {
-    fontSize: 16, fontWeight: 'bold', marginBottom: 4,
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 6,
+    color: '#fff',
   },
   timelineDescription: {
-    fontSize: 14, lineHeight: 20, color: 'rgba(255, 255, 255, 0.9)',
+    fontSize: 14,
+    lineHeight: 20,
+    color: 'rgba(255, 255, 255, 0.9)',
   },
 });
