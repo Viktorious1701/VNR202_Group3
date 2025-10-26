@@ -49,23 +49,43 @@ const FONT_SIZE_ADJUSTMENT = 9;
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const paginateContent = (content: string, fontSize: number): string[] => {
-  const cleanContent = content.replace(/\s+/g, ' ').trim();
-  if (!cleanContent) return [''];
-  const adjustment = Math.round((fontSize - 16) * FONT_SIZE_ADJUSTMENT);
-  const wordsPerPage = Math.max(WORDS_PER_PAGE_MIN, BASE_WORDS_PER_PAGE - adjustment);
-  const words = cleanContent.split(' ');
-  const pages: string[] = [];
-  let current: string[] = [];
-  words.forEach((word) => {
-    current.push(word);
-    if (current.length >= wordsPerPage) {
-      pages.push(current.join(' '));
-      current = [];
-    }
-  });
-  if (current.length > 0) pages.push(current.join(' '));
-  return pages.length > 0 ? pages : [''];
+    const cleanContent = content.trim();
+    if (!cleanContent) return [''];
+
+    // First, split by page break markers [PAGEBREAK]
+    const manualPages = cleanContent.split(/\[PAGEBREAK\]|\-\-\-PAGEBREAK\-\-\-/gi);
+
+    const adjustment = Math.round((fontSize - 16) * FONT_SIZE_ADJUSTMENT);
+    const wordsPerPage = Math.max(WORDS_PER_PAGE_MIN, BASE_WORDS_PER_PAGE - adjustment);
+
+    const finalPages: string[] = [];
+
+    // Process each manual page section
+    manualPages.forEach((section) => {
+        // Preserve line breaks, only collapse multiple spaces/tabs
+        const processedSection = section.replace(/[ \t]+/g, ' ').trim();
+        if (!processedSection) return;
+
+        const words = processedSection.split(' ');
+        let current: string[] = [];
+
+        words.forEach((word) => {
+            current.push(word);
+            if (current.length >= wordsPerPage) {
+                finalPages.push(current.join(' '));
+                current = [];
+            }
+        });
+
+        // Push remaining words as a new page
+        if (current.length > 0) {
+            finalPages.push(current.join(' '));
+        }
+    });
+
+    return finalPages.length > 0 ? finalPages : [''];
 };
+
 
 const TimelineViewer = memo(({
   events,
