@@ -6,6 +6,9 @@ import { chapter2 } from './chapters/chapter2-1961-1965';
 import { chapter3 } from './chapters/chapter3-1965-1975';
 import { chapter4 } from './chapters/chapter4-lessons';
 
+// Import the new CNXH history book
+import { historyCNXH } from './history-cnxh';
+
 // This file now acts as an assembler. It constructs the final `libraryBooks` array
 // that the rest of the application will use.
 export const libraryBooks: LibraryBook[] = [
@@ -25,10 +28,11 @@ export const libraryBooks: LibraryBook[] = [
     readingTimeMinutes: 120,
     // The chapters array is now composed of the imported chapter objects.
     chapters: [
-        chapter1, 
-        chapter2, 
-        chapter3, 
+        chapter1,
+        chapter2,
+        chapter3,
         chapter4
     ],
   },
+  historyCNXH,
 ];
