@@ -42,7 +42,7 @@ export function BookShelf({ title, description, iconName = 'library', books, onB
           {description}
         </ThemedText>
       )}
-      
+
       {hasBooks ? (
         <View>
           <View style={[styles.grid, { borderColor: colors.border }]}
@@ -108,10 +108,13 @@ const styles = StyleSheet.create({
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    // The key change: The grid container now centers its content horizontally.
+    // This handles all cases: a single item is centered, two items are centered as a pair,
+    // and a third item wraps to a new line and is also centered.
+    justifyContent: 'center',
     borderWidth: 1,
     borderRadius: 16,
-    padding: 12,
+    paddingVertical: 12, // Use vertical padding to give space at top and bottom of the grid box
   },
   shelfBar: {
     height: 6,
