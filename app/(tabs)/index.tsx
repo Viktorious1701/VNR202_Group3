@@ -149,7 +149,7 @@ export default function HomeScreen() {
       >
         <View style={styles.content}>
           <HeritageBanner
-            title="Thư Viện Việt Nam Cộng Hòa"
+            title="Thư Viện Việt Nam Dân Chủ Cộng Hòa"
             subtitle="Lưu giữ ký ức, gìn giữ văn hóa"
             description="Khám phá kho tư liệu về lịch sử, âm nhạc, văn chương và báo chí miền Nam 1955-1975. Mỗi tựa sách là một lát cắt ký ức."
             ctaLabel="Đọc ngay"

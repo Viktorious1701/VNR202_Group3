@@ -2,12 +2,9 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { LibraryBook } from '@/types/library';
 import { Ionicons } from '@expo/vector-icons';
-import { Dimensions, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
-
-const { width } = Dimensions.get('window');
-const CARD_WIDTH = (width - 64) / 2; // Account for screen padding (16*2) + grid padding (12*2) + gap
 
 const CATEGORY_LABELS: Record<LibraryBook['category'], string> = {
   history: 'lịch sử',
@@ -36,8 +33,8 @@ export function BookCard({ book, onPress }: BookCardProps) {
   return (
     <TouchableOpacity onPress={() => onPress?.(book)} style={styles.container} activeOpacity={0.85}>
       <ThemedView style={[
-        styles.card, 
-        { 
+        styles.card,
+        {
           backgroundColor: colors.cardBackground,
           shadowColor: colors.shadow,
           borderColor: colors.border,
@@ -74,14 +71,14 @@ export function BookCard({ book, onPress }: BookCardProps) {
           {progress > 0 && (
             <View style={styles.progressContainer}>
               <View style={[styles.progressBar, { backgroundColor: colors.border }]}>
-                <View 
+                <View
                   style={[
-                    styles.progressFill, 
-                    { 
+                    styles.progressFill,
+                    {
                       backgroundColor: accentColor,
-                      width: `${progress}%` 
+                      width: `${progress}%`
                     }
-                  ]} 
+                  ]}
                 />
               </View>
               <ThemedText style={styles.progressText}>{progress}%</ThemedText>
@@ -105,8 +102,9 @@ export function BookCard({ book, onPress }: BookCardProps) {
 
 const styles = StyleSheet.create({
   container: {
-    width: CARD_WIDTH,
-    marginBottom: 16,
+    // The width is now flexible, based on a percentage to allow for wrapping.
+    flexBasis: '46%', // Use flex-basis to suggest a size. Allows for a gap between items.
+    margin: 8, // Use margin for consistent spacing on all sides.
   },
   card: {
     borderRadius: 12,

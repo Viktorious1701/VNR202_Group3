@@ -4,7 +4,6 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Dimensions,
   Image,
-  ImageBackground,
   Modal,
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -49,23 +48,43 @@ const FONT_SIZE_ADJUSTMENT = 9;
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const paginateContent = (content: string, fontSize: number): string[] => {
-  const cleanContent = content.replace(/\s+/g, ' ').trim();
-  if (!cleanContent) return [''];
-  const adjustment = Math.round((fontSize - 16) * FONT_SIZE_ADJUSTMENT);
-  const wordsPerPage = Math.max(WORDS_PER_PAGE_MIN, BASE_WORDS_PER_PAGE - adjustment);
-  const words = cleanContent.split(' ');
-  const pages: string[] = [];
-  let current: string[] = [];
-  words.forEach((word) => {
-    current.push(word);
-    if (current.length >= wordsPerPage) {
-      pages.push(current.join(' '));
-      current = [];
-    }
-  });
-  if (current.length > 0) pages.push(current.join(' '));
-  return pages.length > 0 ? pages : [''];
+    const cleanContent = content.trim();
+    if (!cleanContent) return [''];
+
+    // First, split by page break markers [PAGEBREAK]
+    const manualPages = cleanContent.split(/\[PAGEBREAK\]|\-\-\-PAGEBREAK\-\-\-/gi);
+
+    const adjustment = Math.round((fontSize - 16) * FONT_SIZE_ADJUSTMENT);
+    const wordsPerPage = Math.max(WORDS_PER_PAGE_MIN, BASE_WORDS_PER_PAGE - adjustment);
+
+    const finalPages: string[] = [];
+
+    // Process each manual page section
+    manualPages.forEach((section) => {
+        // Preserve line breaks, only collapse multiple spaces/tabs
+        const processedSection = section.replace(/[ \t]+/g, ' ').trim();
+        if (!processedSection) return;
+
+        const words = processedSection.split(' ');
+        let current: string[] = [];
+
+        words.forEach((word) => {
+            current.push(word);
+            if (current.length >= wordsPerPage) {
+                finalPages.push(current.join(' '));
+                current = [];
+            }
+        });
+
+        // Push remaining words as a new page
+        if (current.length > 0) {
+            finalPages.push(current.join(' '));
+        }
+    });
+
+    return finalPages.length > 0 ? finalPages : [''];
 };
+
 
 const TimelineViewer = memo(({
   events,
@@ -231,31 +250,32 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
   return (
     <ThemedView style={styles.container}>
       {/* Chapter Pills */}
-      <ScrollView
-        ref={chapterScrollViewRef}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.chapterPills}
-        style={[styles.chapterPillsWrapper, { borderBottomColor: colors.border }]}
-      >
-        {book.chapters.map((chapter, index) => {
-          const isActive = index === chapterIndex;
-          return (
-            <TouchableOpacity
-              key={chapter.id}
-              onPress={() => changeChapter(index)}
-              style={[
-                styles.chapterPill,
-                { backgroundColor: isActive ? appliedPalette.accent : 'transparent', borderColor: appliedPalette.accent },
-              ]}
-            >
-              <ThemedText style={[styles.chapterPillText, { color: isActive ? colors.background : appliedPalette.accent }]}>
-                {chapter.title}
-              </ThemedText>
-            </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
+      <View style={[styles.chapterPillsWrapper, { borderBottomColor: colors.border, backgroundColor: colors.cardBackground }]}>
+        <ScrollView
+          ref={chapterScrollViewRef}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.chapterPills}
+        >
+          {book.chapters.map((chapter, index) => {
+            const isActive = index === chapterIndex;
+            return (
+              <TouchableOpacity
+                key={chapter.id}
+                onPress={() => changeChapter(index)}
+                style={[
+                  styles.chapterPill,
+                  { backgroundColor: isActive ? appliedPalette.accent : 'transparent', borderColor: appliedPalette.accent },
+                ]}
+              >
+                <ThemedText style={[styles.chapterPillText, { color: isActive ? colors.background : appliedPalette.accent }]}>
+                  {chapter.title}
+                </ThemedText>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+      </View>
 
       {/* Chapter Content */}
       <AnimatedView style={[styles.chapterContainer, chapterContainerAnimatedStyle]}>
@@ -270,66 +290,60 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
         >
           {currentPages.map((pageContent, pIndex) => (
             <View key={`${currentChapter.id}-${pIndex}`} style={styles.pageContainer}>
-              <ScrollView style={styles.pageScrollView} contentContainerStyle={styles.contentInner}>
-                <ImageBackground
-                  source={currentChapter.backgroundImage || require('@/assets/images/react-logo.png')}
-                  style={styles.pageImageBackground}
-                  imageStyle={styles.pageImage}
-                  resizeMode="cover"
-                >
-                  <LinearGradient colors={[appliedPalette.overlayColor, appliedPalette.overlayColor]} style={styles.gradientOverlay}>
-                    <View style={[styles.page, { backgroundColor: 'transparent', shadowColor: appliedPalette.shadow, borderColor: 'transparent' }]}>
-                      <View style={styles.pageHeader}>
-                        <View style={[styles.chapterTitleBadge, { backgroundColor: appliedPalette.accent + '22' }]}>
-                          <ThemedText style={[styles.chapterTitle, { color: appliedPalette.accent, textShadowColor: appliedPalette.textShadow, textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3 }]}>
-                            {currentChapter.title}
-                          </ThemedText>
-                        </View>
-                        <View style={styles.chapterInfoRow}>
-                          <View style={[styles.infoBadge, { backgroundColor: appliedPalette.pageBackground + 'DD' }]}>
-                            <Ionicons name="document-text" size={12} color={appliedPalette.accent} />
-                            <ThemedText style={[styles.infoBadgeText, { color: appliedPalette.textColor }]}>
-                              Chương {chapterIndex + 1}/{book.chapters.length}
-                            </ThemedText>
-                          </View>
-                          {currentChapter.media && (
-                            <View style={[styles.infoBadge, { backgroundColor: appliedPalette.accent + '33' }]}>
-                              <Ionicons name="images" size={12} color={appliedPalette.accent} />
-                              <ThemedText style={[styles.infoBadgeText, { color: appliedPalette.textColor }]}>
-                                Nhấn vào nội dung để xem hình ảnh
-                              </ThemedText>
-                            </View>
-                          )}
-                        </View>
+              <ScrollView
+                style={[styles.pageScrollView, { backgroundColor: appliedPalette.pageBackground }]}
+                contentContainerStyle={styles.contentInner}
+              >
+                <View style={styles.page}>
+                  <View style={styles.pageHeader}>
+                    <View style={[styles.chapterTitleBadge, { backgroundColor: appliedPalette.accent + '22' }]}>
+                      <ThemedText style={[styles.chapterTitle, { color: appliedPalette.accent }]}>
+                        {currentChapter.title}
+                      </ThemedText>
+                    </View>
+                    <View style={styles.chapterInfoRow}>
+                      <View style={[styles.infoBadge, { backgroundColor: appliedPalette.pageBackground + 'DD' }]}>
+                        <Ionicons name="document-text" size={12} color={appliedPalette.accent} />
+                        <ThemedText style={[styles.infoBadgeText, { color: appliedPalette.textColor }]}>
+                          Chương {chapterIndex + 1}/{book.chapters.length}
+                        </ThemedText>
                       </View>
-                      <Markdown
-                        style={{
-                          body: { fontSize, lineHeight: fontSize * 1.7, color: appliedPalette.textColor, textShadowColor: appliedPalette.textShadow, textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4 },
-                          heading1: { color: appliedPalette.accent, fontSize: fontSize + 6, fontWeight: 'bold', marginBottom: 12, marginTop: 16 },
-                          heading2: { color: appliedPalette.accent, fontSize: fontSize + 4, fontWeight: 'bold', marginBottom: 10, marginTop: 14 },
-                          strong: { fontWeight: 'bold' },
-                          link: { color: appliedPalette.accent, textDecorationLine: 'underline', fontWeight: 'bold' },
-                          bullet_list: { marginVertical: 8 },
-                          list_item: { marginVertical: 4 },
-                        }}
-                        onLinkPress={(url) => {
-                          handleMediaPress(url);
-                          return false;
-                        }}
-                      >
-                        {pageContent}
-                      </Markdown>
-                      {currentChapter.featuredQuote && pIndex === 0 && (
-                        <View style={[styles.quoteBox, { borderColor: appliedPalette.accent, backgroundColor: appliedPalette.pageBackground + 'CC' }]}>
-                          <Ionicons name="sparkles" size={16} color={appliedPalette.accent} />
-                          <ThemedText style={[styles.quoteText, { color: appliedPalette.accent, textShadowColor: appliedPalette.textShadow, textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2 }]} numberOfLines={4}>
-                            &quot;{currentChapter.featuredQuote}&quot;
+                      {currentChapter.media && (
+                        <View style={[styles.infoBadge, { backgroundColor: appliedPalette.accent + '33' }]}>
+                          <Ionicons name="images" size={12} color={appliedPalette.accent} />
+                          <ThemedText style={[styles.infoBadgeText, { color: appliedPalette.textColor }]}>
+                            Nhấn vào nội dung để xem hình ảnh
                           </ThemedText>
                         </View>
                       )}
                     </View>
-                  </LinearGradient>
-                </ImageBackground>
+                  </View>
+                  <Markdown
+                    style={{
+                      body: { fontSize, lineHeight: fontSize * 1.7, color: appliedPalette.textColor },
+                      heading1: { color: appliedPalette.accent, fontSize: fontSize + 6, fontWeight: 'bold', marginBottom: 12, marginTop: 16 },
+                      heading2: { color: appliedPalette.accent, fontSize: fontSize + 4, fontWeight: 'bold', marginBottom: 10, marginTop: 14 },
+                      strong: { fontWeight: 'bold' },
+                      link: { color: appliedPalette.accent, textDecorationLine: 'underline', fontWeight: 'bold' },
+                      bullet_list: { marginVertical: 8 },
+                      list_item: { marginVertical: 4 },
+                    }}
+                    onLinkPress={(url) => {
+                      handleMediaPress(url);
+                      return false;
+                    }}
+                  >
+                    {pageContent}
+                  </Markdown>
+                  {currentChapter.featuredQuote && pIndex === 0 && (
+                    <View style={[styles.quoteBox, { borderColor: appliedPalette.accent, backgroundColor: appliedPalette.pageBackground + 'CC' }]}>
+                      <Ionicons name="sparkles" size={16} color={appliedPalette.accent} />
+                      <ThemedText style={[styles.quoteText, { color: appliedPalette.accent }]} numberOfLines={4}>
+                        &quot;{currentChapter.featuredQuote}&quot;
+                      </ThemedText>
+                    </View>
+                  )}
+                </View>
               </ScrollView>
             </View>
           ))}
@@ -340,7 +354,7 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
       <Modal visible={mediaModalVisible} transparent animationType="fade" onRequestClose={handleCloseModal}>
         <View style={styles.modalOverlay}>
           <SafeAreaView style={styles.modalSafeArea}>
-            
+
             {/* Close Button - Top Right */}
             <TouchableOpacity
               onPress={handleCloseModal}
@@ -362,9 +376,9 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
               <View style={styles.singleImageContainer}>
                 {/* Main Image */}
                 <View style={styles.imageWrapper}>
-                  <Image 
-                    source={currentImage} 
-                    style={styles.mainImage} 
+                  <Image
+                    source={currentImage}
+                    style={styles.mainImage}
                     resizeMode="contain"
                   />
                 </View>
@@ -391,10 +405,10 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
                           disabled={currentImageIndex === 0}
                           style={[styles.galleryButton, currentImageIndex === 0 && styles.galleryButtonDisabled]}
                         >
-                          <Ionicons 
-                            name="chevron-back" 
-                            size={24} 
-                            color={currentImageIndex === 0 ? 'rgba(255,255,255,0.3)' : '#fff'} 
+                          <Ionicons
+                            name="chevron-back"
+                            size={24}
+                            color={currentImageIndex === 0 ? 'rgba(255,255,255,0.3)' : '#fff'}
                           />
                         </TouchableOpacity>
 
@@ -407,10 +421,10 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
                           disabled={currentImageIndex === selectedMedia.items.length - 1}
                           style={[styles.galleryButton, currentImageIndex === selectedMedia.items.length - 1 && styles.galleryButtonDisabled]}
                         >
-                          <Ionicons 
-                            name="chevron-forward" 
-                            size={24} 
-                            color={currentImageIndex === selectedMedia.items.length - 1 ? 'rgba(255,255,255,0.3)' : '#fff'} 
+                          <Ionicons
+                            name="chevron-forward"
+                            size={24}
+                            color={currentImageIndex === selectedMedia.items.length - 1 ? 'rgba(255,255,255,0.3)' : '#fff'}
                           />
                         </TouchableOpacity>
                       </View>
@@ -459,21 +473,33 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  chapterPillsWrapper: { borderBottomWidth: 1, flexGrow: 0 },
-  chapterPills: { paddingHorizontal: 16, paddingVertical: 8, gap: 8 },
+  // The wrapper now has a background color and provides horizontal padding for the entire bar.
+  chapterPillsWrapper: {
+    borderBottomWidth: 1,
+    flexGrow: 0,
+    paddingHorizontal: 16,
+  },
+  // The content container no longer needs horizontal padding, as the parent wrapper handles it.
+  chapterPills: {
+    paddingVertical: 8,
+    gap: 8,
+  },
   chapterPill: { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 999, borderWidth: 1.5 },
   chapterPillText: { fontSize: 13, fontWeight: '600' },
   chapterContainer: { flex: 1 },
   contentContainer: { flex: 1 },
   pageContainer: { width: SCREEN_WIDTH, flex: 1 },
-  pageScrollView: { flex: 1 },
-  contentInner: { paddingHorizontal: 16, paddingTop: 20, paddingBottom: 28 },
-  pageImageBackground: { borderRadius: 18, overflow: 'hidden', minHeight: 600 },
-  pageImage: { borderRadius: 18 },
-  gradientOverlay: { flex: 1, minHeight: 600 },
-  page: { paddingHorizontal: 24, paddingVertical: 28, borderRadius: 18, borderWidth: 1, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.18, shadowRadius: 12, elevation: 3 },
+  // The vertical scroll view now receives the background color, simplifying the structure.
+  pageScrollView: {
+    flex: 1,
+  },
+  contentInner: { paddingHorizontal: 24, paddingTop: 20, paddingBottom: 28 },
+  // The ImageBackground and Gradient have been removed. The 'page' is now the main content block.
+  page: {
+    flex: 1,
+  },
   pageHeader: { flexDirection: 'column', alignItems: 'flex-start', gap: 10, marginBottom: 20 },
-  chapterTitleBadge: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 12 },
+  chapterTitleBadge: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 12, alignSelf: 'flex-start' },
   chapterTitle: { fontSize: 16, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 },
   chapterInfoRow: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
   infoBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
