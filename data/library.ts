@@ -1,3 +1,4 @@
+// VNR202_Group3/data/library.ts
 import type { LibraryBook } from '@/types/library';
 
 // Import the individual chapter data from their separate files.
@@ -5,9 +6,6 @@ import { chapter1 } from './chapters/chapter1-1954-1960';
 import { chapter2 } from './chapters/chapter2-1961-1965';
 import { chapter3 } from './chapters/chapter3-1965-1975';
 import { chapter4 } from './chapters/chapter4-lessons';
-
-// Import the new CNXH history book
-import { historyCNXH } from './history-cnxh';
 
 // This file now acts as an assembler. It constructs the final `libraryBooks` array
 // that the rest of the application will use.
@@ -34,5 +32,4 @@ export const libraryBooks: LibraryBook[] = [
         chapter4
     ],
   },
-  historyCNXH,
 ];
