@@ -1,3 +1,4 @@
+// VNR202_Group3/components/ebook-reader.tsx
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -47,49 +48,67 @@ interface ReaderPalette {
   textShadow: string;
 }
 
-const BASE_WORDS_PER_PAGE = 190;
-const WORDS_PER_PAGE_MIN = 90;
-const FONT_SIZE_ADJUSTMENT = 9;
+const BASE_CHARS_PER_PAGE = 1200;
+const CHARS_PER_PAGE_MIN = 600;
+const FONT_SIZE_ADJUSTMENT = 80;
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const paginateContent = (content: string, fontSize: number): string[] => {
     const cleanContent = content.trim();
     if (!cleanContent) return [''];
 
-    // First, split by page break markers [PAGEBREAK]
     const manualPages = cleanContent.split(/\[PAGEBREAK\]|\-\-\-PAGEBREAK\-\-\-/gi);
 
     const adjustment = Math.round((fontSize - 16) * FONT_SIZE_ADJUSTMENT);
-    const wordsPerPage = Math.max(WORDS_PER_PAGE_MIN, BASE_WORDS_PER_PAGE - adjustment);
+    const charsPerPage = Math.max(CHARS_PER_PAGE_MIN, BASE_CHARS_PER_PAGE - adjustment);
 
     const finalPages: string[] = [];
 
-    // Process each manual page section
     manualPages.forEach((section) => {
-        // Preserve line breaks, only collapse multiple spaces/tabs
         const processedSection = section.replace(/[ \t]+/g, ' ').trim();
         if (!processedSection) return;
 
-        const words = processedSection.split(' ');
-        let current: string[] = [];
-
-        words.forEach((word) => {
-            current.push(word);
-            if (current.length >= wordsPerPage) {
-                finalPages.push(current.join(' '));
-                current = [];
+        const blocks = processedSection.split(/(?=\n\*\*[^*]+\*\*)|(?=\n#{1,2} )/);
+        
+        let currentPage = '';
+        
+        blocks.forEach((block) => {
+            const blockTrimmed = block.trim();
+            if (!blockTrimmed) return;
+            
+            if (currentPage && (currentPage.length + blockTrimmed.length) > charsPerPage) {
+                if (currentPage.trim()) {
+                    finalPages.push(currentPage.trim());
+                }
+                currentPage = blockTrimmed;
+            } else {
+                currentPage += (currentPage ? '\n\n' : '') + blockTrimmed;
+            }
+            
+            if (currentPage.length > charsPerPage * 1.5) {
+                const paragraphs = currentPage.split(/\n\n+/);
+                let tempPage = '';
+                
+                paragraphs.forEach((para) => {
+                    if (tempPage && (tempPage.length + para.length) > charsPerPage) {
+                        finalPages.push(tempPage.trim());
+                        tempPage = para;
+                    } else {
+                        tempPage += (tempPage ? '\n\n' : '') + para;
+                    }
+                });
+                
+                currentPage = tempPage;
             }
         });
 
-        // Push remaining words as a new page
-        if (current.length > 0) {
-            finalPages.push(current.join(' '));
+        if (currentPage.trim()) {
+            finalPages.push(currentPage.trim());
         }
     });
 
     return finalPages.length > 0 ? finalPages : [''];
 };
-
 
 const TimelineViewer = memo(({
   events,
@@ -146,17 +165,16 @@ const FlipPage = memo(({
     const relativeProgress = index - offset;
     const absProgress = Math.abs(relativeProgress);
 
-    const rotateY = interpolate(relativeProgress, [-1, 0, 1], [32, 0, -32], Extrapolation.CLAMP);
-    const translateX = interpolate(relativeProgress, [-1, 0, 1], [-width * 0.18, 0, width * 0.18], Extrapolation.CLAMP);
-    const scale = interpolate(absProgress, [0, 1.2], [1, 0.94], Extrapolation.CLAMP);
-    const elevation = interpolate(absProgress, [0, 1], [12, 3], Extrapolation.CLAMP);
-    const shadowOpacity = interpolate(absProgress, [0, 0.5, 1], [0.25, 0.16, 0.1], Extrapolation.CLAMP);
-    const shadowRadius = interpolate(absProgress, [0, 1], [16, 6], Extrapolation.CLAMP);
-    const zIndexInterpolated = interpolate(absProgress, [0, 0.6, 1.5], [8, 4, 0], Extrapolation.CLAMP);
+    const rotateY = interpolate(relativeProgress, [-1, 0, 1], [15, 0, -15], Extrapolation.CLAMP);
+    const translateX = interpolate(relativeProgress, [-1, 0, 1], [-width * 0.1, 0, width * 0.1], Extrapolation.CLAMP);
+    const scale = interpolate(absProgress, [0, 1], [1, 0.95], Extrapolation.CLAMP);
+    const elevation = interpolate(absProgress, [0, 1], [8, 2], Extrapolation.CLAMP);
+    const shadowOpacity = interpolate(absProgress, [0, 1], [0.2, 0.05], Extrapolation.CLAMP);
+    const shadowRadius = interpolate(absProgress, [0, 1], [12, 4], Extrapolation.CLAMP);
 
     return {
       transform: [
-        { perspective: 1200 },
+        { perspective: 1000 },
         { rotateY: `${rotateY}deg` },
         { translateX },
         { scale },
@@ -164,17 +182,8 @@ const FlipPage = memo(({
       elevation,
       shadowOpacity,
       shadowRadius,
-      shadowOffset: { width: 0, height: 8 },
-      zIndex: Math.round(zIndexInterpolated),
+      shadowOffset: { width: 0, height: 4 },
     };
-  }, [index, scrollX, width]);
-
-  const shadingStyle = useAnimatedStyle(() => {
-    const offset = scrollX.value / width;
-    const absProgress = Math.abs(index - offset);
-    const opacity = interpolate(absProgress, [0, 0.5, 1.2], [0.04, 0.18, 0.32], Extrapolation.CLAMP);
-
-    return { opacity };
   }, [index, scrollX, width]);
 
   return (
@@ -183,6 +192,7 @@ const FlipPage = memo(({
         <ScrollView
           style={styles.pageScrollView}
           contentContainerStyle={styles.contentInner}
+          showsVerticalScrollIndicator={false}
         >
           <View style={styles.page}>
             <View style={styles.pageHeader}>
@@ -193,16 +203,16 @@ const FlipPage = memo(({
               </View>
               <View style={styles.chapterInfoRow}>
                 <View style={[styles.infoBadge, { backgroundColor: appliedPalette.pageBackground + 'DD' }]}>
-                  <Ionicons name="document-text" size={12} color={appliedPalette.accent} />
+                  <Ionicons name="document-text" size={11} color={appliedPalette.accent} />
                   <ThemedText style={[styles.infoBadgeText, { color: appliedPalette.textColor }]}>
                     Chương {chapterIndex + 1}/{chaptersCount}
                   </ThemedText>
                 </View>
                 {chapter.media && (
                   <View style={[styles.infoBadge, { backgroundColor: appliedPalette.accent + '33' }]}>
-                    <Ionicons name="images" size={12} color={appliedPalette.accent} />
+                    <Ionicons name="images" size={11} color={appliedPalette.accent} />
                     <ThemedText style={[styles.infoBadgeText, { color: appliedPalette.textColor }]}>
-                      Nhấn vào nội dung để xem hình ảnh
+                      Nhấn link để xem ảnh
                     </ThemedText>
                   </View>
                 )}
@@ -212,22 +222,25 @@ const FlipPage = memo(({
               style={{
                 body: {
                   fontSize,
-                  lineHeight: fontSize * 1.7,
+                  lineHeight: fontSize * 1.6,
                   color: appliedPalette.textColor,
+                  width: '100%',
                 },
                 heading1: {
                   color: appliedPalette.accent,
-                  fontSize: fontSize + 6,
+                  fontSize: fontSize + 4,
                   fontWeight: 'bold',
-                  marginBottom: 12,
-                  marginTop: 16,
+                  marginBottom: 8,
+                  marginTop: 12,
+                  width: '100%',
                 },
                 heading2: {
                   color: appliedPalette.accent,
-                  fontSize: fontSize + 4,
+                  fontSize: fontSize + 2,
                   fontWeight: 'bold',
-                  marginBottom: 10,
-                  marginTop: 14,
+                  marginBottom: 6,
+                  marginTop: 10,
+                  width: '100%',
                 },
                 strong: { fontWeight: 'bold' },
                 link: {
@@ -235,8 +248,18 @@ const FlipPage = memo(({
                   textDecorationLine: 'underline',
                   fontWeight: 'bold',
                 },
-                bullet_list: { marginVertical: 8 },
-                list_item: { marginVertical: 4 },
+                paragraph: {
+                  marginBottom: 8,
+                  width: '100%',
+                },
+                bullet_list: { 
+                  marginVertical: 6,
+                  width: '100%',
+                },
+                list_item: { 
+                  marginVertical: 3,
+                  width: '100%',
+                },
               }}
               onLinkPress={(url) => {
                 onMediaPress(url);
@@ -247,7 +270,7 @@ const FlipPage = memo(({
             </Markdown>
             {chapter.featuredQuote && index === 0 && (
               <View style={[styles.quoteBox, { borderColor: appliedPalette.accent, backgroundColor: appliedPalette.pageBackground + 'CC' }]}> 
-                <Ionicons name="sparkles" size={16} color={appliedPalette.accent} />
+                <Ionicons name="sparkles" size={14} color={appliedPalette.accent} />
                 <ThemedText style={[styles.quoteText, { color: appliedPalette.accent }]} numberOfLines={4}>
                   &quot;{chapter.featuredQuote}&quot;
                 </ThemedText>
@@ -256,7 +279,6 @@ const FlipPage = memo(({
           </View>
         </ScrollView>
       </View>
-      <Animated.View pointerEvents="none" style={[styles.pageShadowOverlay, shadingStyle]} />
     </AnimatedView>
   );
 });
@@ -400,7 +422,6 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
     transform: [{ translateX: slideTranslateX.value }],
   }));
 
-  // Get current image to display
   const currentImage = selectedMedia?.items[currentImageIndex];
 
   useEffect(() => {
@@ -409,7 +430,6 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
 
   return (
     <ThemedView style={styles.container}>
-      {/* Chapter Pills */}
       <View style={[styles.chapterPillsWrapper, { borderBottomColor: colors.border, backgroundColor: colors.cardBackground }]}>
         <ScrollView
           ref={chapterScrollViewRef}
@@ -437,7 +457,6 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
         </ScrollView>
       </View>
 
-      {/* Chapter Content */}
       <AnimatedView style={[styles.chapterContainer, chapterContainerAnimatedStyle]}>
         <AnimatedScrollView
           ref={pageScrollViewRef}
@@ -468,12 +487,9 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
         </AnimatedScrollView>
       </AnimatedView>
 
-      {/* REDESIGNED: Simple Modal - One Image at a Time */}
       <Modal visible={mediaModalVisible} transparent animationType="fade" onRequestClose={handleCloseModal}>
         <View style={styles.modalOverlay}>
           <SafeAreaView style={styles.modalSafeArea}>
-
-            {/* Close Button - Top Right */}
             <TouchableOpacity
               onPress={handleCloseModal}
               style={[styles.modalCloseButton, { top: insets.top + 10, right: 20 }]}
@@ -482,7 +498,6 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
             </TouchableOpacity>
 
             {selectedMedia?.type === 'timeline' ? (
-              /* Timeline View */
               <ScrollView style={styles.timelineScrollView} contentContainerStyle={{ paddingBottom: 60 }}>
                 <ThemedText style={[styles.modalTitle, { paddingHorizontal: 24, paddingTop: 20, textAlign: 'center', color: '#fff' }]}>
                   {selectedMedia.title}
@@ -490,9 +505,7 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
                 <TimelineViewer events={selectedMedia.items as TimelineEvent[]} palette={readerPalettes.night} />
               </ScrollView>
             ) : (
-              /* Single Image View with Info */
               <View style={styles.singleImageContainer}>
-                {/* Main Image */}
                 <View style={styles.imageWrapper}>
                   <Image
                     source={currentImage}
@@ -501,7 +514,6 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
                   />
                 </View>
 
-                {/* Bottom Info Card */}
                 <LinearGradient
                   colors={['transparent', 'rgba(0,0,0,0.95)']}
                   style={[styles.infoCard, { paddingBottom: insets.bottom + 20 }]}
@@ -515,7 +527,6 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
                       <ThemedText style={styles.modalCaption}>&quot;{selectedMedia.caption}&quot;</ThemedText>
                     )}
 
-                    {/* Gallery Counter & Navigation */}
                     {selectedMedia && selectedMedia.items.length > 1 && (
                       <View style={styles.galleryControls}>
                         <TouchableOpacity
@@ -555,15 +566,14 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
         </View>
       </Modal>
 
-      {/* Footer */}
       <View style={[styles.footer, { borderTopColor: colors.border, backgroundColor: colors.cardBackground }]}>
         <TouchableOpacity
           onPress={goToPreviousPage}
           style={[styles.navButton, { opacity: chapterIndex === 0 && pageIndex === 0 ? 0.3 : 1 }]}
           disabled={chapterIndex === 0 && pageIndex === 0}
         >
-          <Ionicons name="chevron-back" size={24} color={colors.text} />
-          <ThemedText style={styles.navText}>Trang trước</ThemedText>
+          <Ionicons name="chevron-back" size={22} color={colors.text} />
+          <ThemedText style={styles.navText}>Trước</ThemedText>
         </TouchableOpacity>
         <View style={styles.progressWrapper}>
           <View style={[styles.progressBar, { backgroundColor: colors.border }]}>
@@ -581,8 +591,8 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
           style={[styles.navButton, { opacity: chapterIndex === book.chapters.length - 1 && pageIndex === currentPages.length - 1 ? 0.3 : 1 }]}
           disabled={chapterIndex === book.chapters.length - 1 && pageIndex === currentPages.length - 1}
         >
-          <ThemedText style={styles.navText}>Trang sau</ThemedText>
-          <Ionicons name="chevron-forward" size={24} color={colors.text} />
+          <ThemedText style={styles.navText}>Sau</ThemedText>
+          <Ionicons name="chevron-forward" size={22} color={colors.text} />
         </TouchableOpacity>
       </View>
     </ThemedView>
@@ -591,77 +601,123 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  // The wrapper now has a background color and provides horizontal padding for the entire bar.
   chapterPillsWrapper: {
     borderBottomWidth: 1,
     flexGrow: 0,
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
   },
-  // The content container no longer needs horizontal padding, as the parent wrapper handles it.
   chapterPills: {
     paddingVertical: 8,
     gap: 8,
   },
-  chapterPill: { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 999, borderWidth: 1.5 },
-  chapterPillText: { fontSize: 13, fontWeight: '600' },
+  chapterPill: { paddingHorizontal: 12, paddingVertical: 5, borderRadius: 999, borderWidth: 1.5 },
+  chapterPillText: { fontSize: 12, fontWeight: '600' },
   chapterContainer: { flex: 1 },
   contentContainer: { flex: 1 },
   pageContainer: {
     width: SCREEN_WIDTH,
     flex: 1,
-    paddingVertical: 32,
-    paddingHorizontal: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
     shadowColor: '#000',
   },
   pageSurface: {
     flex: 1,
-    borderRadius: 20,
+    borderRadius: 12,
     overflow: 'hidden',
-  },
-  pageBackground: {
-    flex: 1,
-  },
-  pageBackgroundImage: {
-    width: '100%',
-    height: '100%',
-  },
-  pageGradient: {
-    flex: 1,
   },
   pageScrollView: {
     flex: 1,
   },
-  contentInner: { paddingHorizontal: 24, paddingTop: 20, paddingBottom: 28 },
-  // The ImageBackground and Gradient have been removed. The 'page' is now the main content block.
+  contentInner: { 
+    paddingHorizontal: 16, 
+    paddingTop: 16, 
+    paddingBottom: 20,
+    width: '100%',
+  },
   page: {
     flex: 1,
+    width: '100%',
   },
-  pageHeader: { flexDirection: 'column', alignItems: 'flex-start', gap: 10, marginBottom: 20 },
-  chapterTitleBadge: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 12, alignSelf: 'flex-start' },
-  chapterTitle: { fontSize: 16, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 },
-  chapterInfoRow: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
-  infoBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
-  infoBadgeText: { fontSize: 11, fontWeight: '600' },
-  quoteBox: { borderWidth: 1, borderRadius: 12, padding: 14, flexDirection: 'row', alignItems: 'flex-start', gap: 8, marginTop: 20 },
-  quoteText: { fontSize: 13, fontStyle: 'italic', flex: 1 },
-  pageShadowOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#000',
-    opacity: 0,
-    borderRadius: 20,
+  pageHeader: { 
+    flexDirection: 'column', 
+    alignItems: 'flex-start', 
+    gap: 6, 
+    marginBottom: 12,
+    width: '100%',
   },
-  footer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 14, borderTopWidth: 1 },
-  navButton: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 8, paddingHorizontal: 4 },
-  navText: { fontSize: 14, fontWeight: '600' },
-  progressWrapper: { flex: 1, marginHorizontal: 12, gap: 6 },
-  progressBar: { height: 5, borderRadius: 3, overflow: 'hidden' },
+  chapterTitleBadge: { 
+    paddingHorizontal: 10, 
+    paddingVertical: 5, 
+    borderRadius: 8, 
+    alignSelf: 'flex-start',
+    maxWidth: '100%',
+  },
+  chapterTitle: { 
+    fontSize: 13, 
+    fontWeight: '700', 
+    textTransform: 'uppercase', 
+    letterSpacing: 0.5,
+  },
+  chapterInfoRow: { 
+    flexDirection: 'row', 
+    gap: 6, 
+    flexWrap: 'wrap',
+    width: '100%',
+  },
+  infoBadge: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    gap: 3, 
+    paddingHorizontal: 8, 
+    paddingVertical: 3, 
+    borderRadius: 6,
+    flexShrink: 1,
+  },
+  infoBadgeText: { 
+    fontSize: 10, 
+    fontWeight: '600',
+    flexShrink: 1,
+  },
+  quoteBox: { 
+    borderWidth: 1, 
+    borderRadius: 8, 
+    padding: 10, 
+    flexDirection: 'row', 
+    alignItems: 'flex-start', 
+    gap: 6, 
+    marginTop: 12,
+    width: '100%',
+  },
+  quoteText: { 
+    fontSize: 12, 
+    fontStyle: 'italic', 
+    flex: 1,
+    flexWrap: 'wrap',
+  },
+  footer: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    alignItems: 'center', 
+    paddingHorizontal: 12, 
+    paddingVertical: 10, 
+    borderTopWidth: 1 
+  },
+  navButton: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    gap: 4, 
+    paddingVertical: 6, 
+    paddingHorizontal: 4 
+  },
+  navText: { fontSize: 12, fontWeight: '600' },
+  progressWrapper: { flex: 1, marginHorizontal: 10, gap: 5 },
+  progressBar: { height: 4, borderRadius: 2, overflow: 'hidden' },
   progressFill: { height: '100%', borderRadius: 3 },
   progressInfo: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   progressText: { fontSize: 11, fontWeight: '500' },
-  progressBadge: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8 },
+  progressBadge: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 },
   progressPercent: { fontSize: 10, fontWeight: '700' },
-
-  // REDESIGNED Modal Styles
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.98)',
@@ -745,8 +801,6 @@ const styles = StyleSheet.create({
     minWidth: 80,
     textAlign: 'center',
   },
-
-  // Timeline styles
   timelineContainer: {
     paddingHorizontal: 20,
     paddingTop: 20,

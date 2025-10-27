@@ -57,12 +57,12 @@ const chapter2Media: Record<string, MediaItem> = {
         description: 'Các tướng lĩnh phe đảo chính bắt đầu hành động, bao vây Dinh Gia Long.',
       },
       {
-        image: require('@/assets/images/partial-react-logo.png'), // Placeholder for another image
+        image: require('@/assets/images/diem-nhu-coup-1963-01.png'), // Placeholder for another image
         date: 'Rạng sáng 2/11/1963',
         description: 'Anh em Diệm - Nhu bí mật rời Dinh và đến ẩn náu tại nhà thờ Cha Tam ở Chợ Lớn.',
       },
       {
-        image: require('@/assets/images/react-logo.png'), // Placeholder for another image
+        image: require('@/assets/images/diem-nhu-coup-1963-01.png'), // Placeholder for another image
         date: 'Sáng 2/11/1963',
         description: 'Sau khi bị bắt, hai anh em Ngô Đình Diệm và Ngô Đình Nhu bị sát hại trên đường về Bộ Tổng tham mưu.',
       },
