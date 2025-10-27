@@ -43,6 +43,19 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "14227e73-c15f-4275-ac93-5f53ac8e30f1"
+      }
+    },
+    "owner": "wbeast",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/14227e73-c15f-4275-ac93-5f53ac8e30f1"
     }
   }
 }
