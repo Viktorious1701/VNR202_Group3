@@ -49,21 +49,15 @@ export default function ChatScreen() {
           'Không thể khởi tạo AI. Vui lòng kiểm tra API key trong constants/gemini.ts'
         );
       }
-    } else {
-      Alert.alert(
-        'Chưa cấu hình API Key',
-        'Vui lòng thêm Gemini API key vào file constants/gemini.ts. Bạn có thể lấy API key miễn phí tại https://makersuite.google.com/app/apikey',
-        [{ text: 'OK' }]
-      );
     }
   }, []);
   
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: isApiKeyValid 
-        ? 'Xin chào! Tôi là trợ lý AI của ứng dụng Di Sản Việt Nam Dân Chủ Cộng Hòa. Tôi có thể giúp bạn tìm hiểu về lịch sử, văn hóa, và các sự kiện quan trọng của Việt Nam Dân Chủ Cộng Hòa (1955-1975). Bạn muốn hỏi gì?'
-        : 'Xin chào! Tôi đang chạy ở chế độ demo. Để sử dụng AI thật với Gemini, vui lòng thêm API key vào file constants/gemini.ts. Lấy API key miễn phí tại: https://makersuite.google.com/app/apikey',
+      text: isApiKeyValid
+          ? 'Xin chào! Tôi đang chạy ở chế độ demo. Để sử dụng AI thật với Gemini, vui lòng thêm API key vào file constants/gemini.ts. Lấy API key miễn phí tại: https://makersuite.google.com/app/apikey'
+        : 'Xin chào! Tôi là trợ lý AI của ứng dụng Di Sản Việt Nam Dân Chủ Cộng Hòa. Tôi có thể giúp bạn tìm hiểu về lịch sử, văn hóa, và các sự kiện quan trọng của Việt Nam Dân Chủ Cộng Hòa (1955-1975). Bạn muốn hỏi gì?',
       isUser: false,
       timestamp: new Date(),
     },
@@ -190,7 +184,7 @@ Nếu câu hỏi không liên quan đến Việt Nam Dân Chủ Cộng Hòa, hã
     'Hiệp định Geneva 1954 là gì?',
     'Tết Mậu Thân 1968',
     'Văn hóa Sài Gòn',
-    'Giáo dục thời VNCH',
+    'Giáo dục thời Việt Nam Dân Chủ Cộng Hoà',
   ];
 
   const handleSuggestionPress = (question: string) => {
@@ -323,7 +317,7 @@ Nếu câu hỏi không liên quan đến Việt Nam Dân Chủ Cộng Hòa, hã
               style={[styles.input, { color: colors.text }]}
               value={inputText}
               onChangeText={setInputText}
-              placeholder="Hỏi về lịch sử VNCH..."
+              placeholder="Hỏi về lịch sử..."
               placeholderTextColor={colors.icon}
               multiline
               maxLength={500}
