@@ -1,7 +1,27 @@
-import type { LibraryChapter } from '@/types/library';
+import type { LibraryChapter, MediaItem } from '@/types/library';
 
 // A default background image used as a placeholder.
 const defaultBackground = require('@/assets/images/partial-react-logo.png');
+
+// This object contains all the interactive media for Chapter 1.
+const chapter1Media: Record<string, MediaItem> = {
+  'dong-khoi': {
+    id: 'dong-khoi-movement',
+    type: 'image',
+    title: 'Phong trào Đồng khởi',
+    description: 'Phong trào "Đồng khởi" bắt đầu từ Bến Tre ngày 17/1/1960, đã tạo ra một bước ngoặt chiến lược.',
+    items: [require('@/assets/images/Dong Khoi 2.png')],
+    caption: 'Nhân dân đồng loạt nổi dậy, phá tan ấp chiến lược, giành chính quyền.',
+  },
+  'truong-son': {
+    id: 'truong-son-road',
+    type: 'image',
+    title: 'Đường Trường Sơn',
+    description: 'Đường Trường Sơn được mở để chi viện cho miền Nam, mang tên đường 559 trên bộ và đường 759 trên biển.',
+    items: [require('@/assets/images/TruongSon.png')],
+    caption: 'Con đường huyền thoại kết nối miền Bắc và miền Nam trong cuộc kháng chiến.',
+  },
+};
 
 // This file contains the data exclusively for Chapter 1.
 export const chapter1: LibraryChapter = {
@@ -9,6 +29,7 @@ export const chapter1: LibraryChapter = {
   title: 'Giai đoạn 1954 - 1960',
   featuredQuote: 'Chuyển cách mạng miền Nam từ thế giữ gìn lực lượng sang thế tiến công.',
   backgroundImage: defaultBackground,
+  media: chapter1Media,
   content: `**Bối cảnh lịch sử**
 
 Sau Hiệp định Genève, đất nước tạm thời bị chia cắt làm hai miền với hai chế độ chính trị khác nhau. Miền Bắc tiến lên chủ nghĩa xã hội, miền Nam vẫn chịu ách thống trị của đế quốc Mỹ và tay sai. Kẻ thù là đế quốc Mỹ hùng mạnh, âm mưu bá chủ thế giới. Tuy nhiên, miền Bắc được hoàn toàn giải phóng, làm căn cứ địa hậu phương cho cả nước.
@@ -33,11 +54,11 @@ Tại miền Nam, với sự hậu thuẫn của Mỹ, Ngô Đình Diệm thiế
 
 **Mở đường Trường Sơn**
 
-Trước tình hình đó, Hội nghị lần thứ 15 (1/1959) đã ra quyết định lịch sử, mở đường Trường Sơn để chi viện miền Nam. Đường vận tải trên bộ mang tên đường 559, trên biển mang tên đường 759.
+Trước tình hình đó, Hội nghị lần thứ 15 (1/1959) đã ra quyết định lịch sử, mở đường Trường Sơn để chi viện miền Nam. Đường vận tải trên bộ mang tên [đường 559](truong-son), trên biển mang tên đường 759.
 
 **Phong trào "Đồng khởi"**
 
-Phong trào "Đồng khởi", bắt đầu từ Bến Tre ngày 17/1/1960, đã tạo ra một bước ngoặt chiến lược, chuyển cách mạng miền Nam từ thế phòng thủ sang thế tiến công. Nhân dân đồng loạt nổi dậy, phá tan ấp chiến lược, giành chính quyền. Đến cuối năm 1960, phong trào làm tan rã cơ cấu chính quyền cơ sở địch ở nhiều vùng.
+[Phong trào "Đồng khởi"](dong-khoi), bắt đầu từ Bến Tre ngày 17/1/1960, đã tạo ra một bước ngoặt chiến lược, chuyển cách mạng miền Nam từ thế phòng thủ sang thế tiến công. Nhân dân đồng loạt nổi dậy, phá tan ấp chiến lược, giành chính quyền. Đến cuối năm 1960, phong trào làm tan rã cơ cấu chính quyền cơ sở địch ở nhiều vùng.
 
 Thắng lợi này dẫn đến sự ra đời của Mặt trận Dân tộc Giải phóng miền Nam Việt Nam vào ngày 20/12/1960 tại Tân Lập, Tây Ninh.`,
-};
+};
