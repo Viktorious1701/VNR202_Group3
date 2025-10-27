@@ -23,7 +23,7 @@ export const GEMINI_API_KEY = 'AIzaSy...your-actual-key-here';
 - **Real-time AI responses** powered by Google's Gemini Pro model
 - **Context-aware** conversations about Vietnamese Republic history (1955-1975)
 - **Fallback mode** - Works with local pattern matching if API key not configured
-- **Smart prompting** - AI is instructed to focus on VNCH historical topics
+- **Smart prompting** - AI is instructed to focus on Việt Nam Dân Chủ Cộng Hoà historical topics
 
 ## API Limits
 
