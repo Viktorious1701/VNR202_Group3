@@ -157,15 +157,209 @@ Nội dung chương 2 đang được hoàn thiện. Vui lòng quay lại sau.
     },
     {
       id: 'cnxh-ch3',
-      title: 'Chương 3: Đang cập nhật...',
-      featuredQuote: 'Nội dung đang được bổ sung',
+      title: '3. Lãnh Đạo Cách Mạng Cả Nước (1965-1975)',
+      featuredQuote: 'Lúc này chống Mỹ cứu nước là nhiệm vụ thiêng liêng nhất của cả dân tộc từ Nam chí Bắc.',
       backgroundImage: defaultBackground,
-      content: `# CHƯƠNG 3
-## Đang cập nhật
+      content: `# LÃNH ĐẠO CÁCH MẠNG CẢ NƯỚC
+## (1965 - 1975)
 
 ---
 
-Nội dung chương 3 đang được hoàn thiện. Vui lòng quay lại sau.
+### 🎯 Đường lối kháng chiến chống Mỹ, cứu nước của Đảng
+
+Sau thất bại "chiến tranh đặc biệt", Mỹ chuyển sang **"chiến tranh cục bộ"**, ồ ạt đưa quân viễn chinh vào miền Nam và mở rộng chiến tranh phá hoại ra miền Bắc.
+
+Ban Chấp hành Trung ương Đảng họp:
+- **📋 Hội nghị lần thứ 11** (3/1965)
+- **📋 Hội nghị lần thứ 12** (12/1965)
+
+Để nhận định tình hình, đề ra nhiệm vụ lãnh đạo cả nước kháng chiến chống Mỹ.
+
+---
+
+## I. NỘI DUNG ĐƯỜNG LỐI KHÁNG CHIẾN
+
+### 💪 Quyết tâm chiến lược
+
+> *"Lúc này chống Mỹ cứu nước là nhiệm vụ thiêng liêng nhất của cả dân tộc từ Nam chí Bắc."*
+
+✊ Đảng khẳng định có đủ điều kiện chiến thắng đế quốc Mỹ, quyết tâm toàn Đảng, toàn dân quyết đánh thắng Mỹ.
+
+### 🎯 Mục tiêu chiến lược
+
+- ⭐ Kiên quyết đánh bại cuộc chiến tranh xâm lược của đế quốc Mỹ
+- ⭐ Giải phóng miền Nam
+- ⭐ Bảo vệ miền Bắc
+- ⭐ Thống nhất Tổ quốc
+
+### 🛡️ Phương châm chiến lược
+
+| Phương châm | Ý nghĩa |
+|------------|---------|
+| **Toàn dân** | Huy động sức mạnh của toàn thể nhân dân |
+| **Toàn diện** | Đấu tranh trên mọi lĩnh vực |
+| **Lâu dài** | Chuẩn bị chiến đấu trong thời gian dài |
+| **Tự lực cánh sinh** | Dựa vào sức mình là chính |
+
+### 🗺️ Nhiệm vụ chiến lược của hai miền
+
+**🏴 Miền Bắc:**
+- Vừa chi viện sức người sức của cho tiền tuyến miền Nam
+- Vừa xây dựng CNXH, xây dựng hậu phương vững mạnh
+
+**⚔️ Miền Nam:**
+- Tập trung lực lượng đánh thắng chiến lược "chiến tranh cục bộ" của Mỹ
+
+---
+
+## II. ĐÁNH BẠI CHIẾN LƯỢC "CHIẾN TRANH CỤC BỘ" (1965-1968)
+
+### 🎖️ Chiến lược của Mỹ
+
+📊 **Quy mô quân sự:**
+- Đưa hơn **500.000 quân viễn chinh** và quân chư hầu vào miền Nam
+- Ném bom phá hoại miền Bắc (1965-1968)
+- Lực lượng: Quân Mỹ + quân ngụy + vũ khí hiện đại
+
+### ⚔️ Cuộc đấu tranh của nhân dân ta
+
+**🔥 Miền Nam:**
+
+Quân dân anh dũng chiến đấu, kết hợp đấu tranh vũ trang với đấu tranh chính trị.
+
+✅ **Những chiến thắng lớn:**
+- 🏆 Vạn Tường
+- 🏆 Núi Thành
+- 🏆 Núi Ba Đen
+
+**🛡️ Miền Bắc:**
+
+> *"Tất cả để đánh thắng giặc Mỹ xâm lược"*
+
+Nhân dân kiên cường chống chiến tranh phá hoại:
+- Vừa đánh vừa xây
+- Chi viện miền Nam không ngừng nghỉ
+
+### 🎆 Tổng tiến công và nổi dậy Tết Mậu Thân 1968
+
+**📅 Ngày 30/1/1968** - Đỉnh cao của nghệ thuật quân sự và chính trị Việt Nam
+
+🎯 **Chiến lược:**
+- Tấn công đồng loạt vào hầu hết các thành phố, thị xã
+- Công phá các căn cứ địch trọng yếu
+- Kết hợp tiến công quân sự với nổi dậy chính trị
+
+🏅 **Kết quả:**
+- ✅ Chiến lược "chiến tranh cục bộ" phá sản hoàn toàn
+- ✅ Mỹ buộc phải tuyên bố ngừng ném bom miền Bắc (1/11/1968)
+- ✅ Chuyển sang chiến lược "Việt Nam hóa chiến tranh"
+
+---
+
+## III. ĐÁNH BẠI "VIỆT NAM HÓA CHIẾN TRANH" (1969-1973)
+
+### 🎭 Chiến lược của Mỹ
+
+**"Để người Việt đánh người Việt"**
+
+- 🔄 Mỹ rút dần quân về
+- ⬆️ Tăng cường cho quân đội Sài Gòn
+- 💣 Cuộc chiến tranh phá hoại lần 2 ở miền Bắc (1972)
+
+### ⚔️ Cuộc đấu tranh của nhân dân ta
+
+**🔥 Miền Nam:**
+- Quân dân tiếp tục tiến công địch
+- Mở rộng vùng giải phóng
+- Củng cố chính quyền cách mạng
+
+**✈️ Miền Bắc:**
+- Kiên cường chống chiến tranh phá hoại
+- Đập tan chiến dịch **"Hà Nội - Điện Biên Phủ trên không"**
+- Bảo vệ hậu phương vững chắc
+
+### 📜 Hiệp định Paris 1973
+
+**📅 Ngày 27/1/1973** - Thắng lợi lịch sử
+
+🏆 **Kết quả:**
+- ✅ Chiến lược "Việt Nam hóa chiến tranh" phá sản
+- ✅ Mỹ buộc phải ký Hiệp định Paris
+- ✅ Công nhận độc lập, chủ quyền, thống nhất và toàn vẹn lãnh thổ Việt Nam
+
+---
+
+## IV. TỔNG TIẾN CÔNG MÙA XUÂN 1975
+
+### 🎖️ Chiến dịch Hồ Chí Minh (26/4 - 30/4/1975)
+
+> *Đỉnh cao nghệ thuật quân sự Việt Nam*
+
+**⚡ Quy mô chiến dịch:**
+- Hơn **200.000 quân chủ lực** từ nhiều hướng
+- Tiến công vào Sài Gòn
+- Kết hợp tiến công quân sự với nổi dậy chính trị
+
+### 🎆 Ngày 30/4/1975 - Đại Thắng Mùa Xuân
+
+**🏴 Sài Gòn được giải phóng hoàn toàn!**
+
+- ✅ Chế độ ngụy quyền Sài Gòn sụp đổ
+- ✅ Đất nước thống nhất
+- ✅ Độc lập, toàn vẹn lãnh thổ
+
+---
+
+## V. Ý NGHĨA LỊCH SỬ
+
+### 🌟 Những thành tựu vĩ đại
+
+1. **🏆 Kết thúc 30 năm chiến tranh**
+   - Hoàn thành độc lập dân tộc
+   - Thống nhất đất nước
+
+2. **💪 Thắng lợi của đường lối đúng đắn**
+   - Lãnh đạo sáng suốt của Đảng
+   - Khối đại đoàn kết toàn dân tộc
+
+3. **⭐ Biểu tượng chủ nghĩa anh hùng**
+   - Tinh thần cách mạng bất굴
+   - Đại đoàn kết dân tộc
+
+4. **🌍 Tầm vóc quốc tế**
+   - Cổ vũ phong trào giải phóng dân tộc
+   - Góp phần bảo vệ hòa bình thế giới
+
+---
+
+## VI. BÀI HỌC KINH NGHIỆM
+
+### 📚 Những bài học vàng
+
+1. **🎯 Kiên định mục tiêu**
+   - Độc lập dân tộc gắn với chủ nghĩa xã hội
+
+2. **👥 Phát huy sức mạnh toàn dân**
+   - Khối đại đoàn kết dân tộc
+   - Huy động mọi nguồn lực
+
+3. **⚔️ Kết hợp đấu tranh đa chiều**
+   - Quân sự + Chính trị + Ngoại giao
+   - Vũ trang + Chính trị + Binh vận
+
+4. **🏴 Vai trò lãnh đạo của Đảng**
+   - Nhân tố quyết định mọi thắng lợi
+   - Đường lối đúng đắn, sáng tạo
+
+5. **🌟 Độc lập, tự chủ**
+   - Sáng tạo trong đường lối cách mạng
+   - Dựa vào sức mình là chính
+
+---
+
+### 🏁 KẾT LUẬN
+
+Thắng lợi năm 1975 là kết quả của cả một quá trình đấu tranh anh dũng, hy sinh của toàn dân tộc dưới sự lãnh đạo sáng suốt của Đảng. Đây là trang sử vàng chói lọi, là niềm tự hào bất diệt của dân tộc Việt Nam, đồng thời là nguồn cảm hứng to lớn cho các thế hệ mai sau trong sự nghiệp xây dựng và bảo vệ Tổ quốc.
 
 ---`,
     },

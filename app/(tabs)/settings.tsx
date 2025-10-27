@@ -197,6 +197,53 @@ export default function SettingsScreen() {
           </View>
         </View>
 
+        {/* AI Disclosure Section */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <ThemedText type="subtitle" style={styles.sectionTitle}>
+              Công cụ AI được sử dụng
+            </ThemedText>
+            <ThemedText style={[styles.sectionHint, { color: colors.icon }]}>
+              Ứng dụng này được xây dựng với sự hỗ trợ của AI
+            </ThemedText>
+          </View>
+
+          <View style={[styles.aiDisclosureCard, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}>
+            <View style={styles.aiToolRow}>
+              <View style={[styles.aiIconBadge, { backgroundColor: '#E97451' + '22' }]}>
+                <Ionicons name="sparkles" size={20} color="#E97451" />
+              </View>
+              <View style={styles.aiToolInfo}>
+                <ThemedText style={styles.aiToolName}>Claude (Anthropic)</ThemedText>
+                <ThemedText style={[styles.aiToolDescription, { color: colors.icon }]}>
+                  Lập trình giao diện, kiến trúc ứng dụng, và tối ưu hóa trải nghiệm người dùng
+                </ThemedText>
+              </View>
+            </View>
+
+            <View style={[styles.aiDivider, { backgroundColor: colors.border }]} />
+
+            <View style={styles.aiToolRow}>
+              <View style={[styles.aiIconBadge, { backgroundColor: '#4285F4' + '22' }]}>
+                <Ionicons name="planet" size={20} color="#4285F4" />
+              </View>
+              <View style={styles.aiToolInfo}>
+                <ThemedText style={styles.aiToolName}>Gemini (Google)</ThemedText>
+                <ThemedText style={[styles.aiToolDescription, { color: colors.icon }]}>
+                  Hỗ trợ nội dung, cấu trúc dữ liệu, và tư vấn thiết kế tính năng
+                </ThemedText>
+              </View>
+            </View>
+
+            <View style={[styles.aiNoteBadge, { backgroundColor: colors.tint + '15', borderColor: colors.tint + '40' }]}>
+              <Ionicons name="information-circle-outline" size={16} color={colors.tint} />
+              <ThemedText style={[styles.aiNoteText, { color: colors.tint }]}>
+                Tất cả nội dung lịch sử và văn hóa đã được xác minh và biên tập bởi con người
+              </ThemedText>
+            </View>
+          </View>
+        </View>
+
         <View style={[styles.footerCard, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}>
           <Ionicons name="information-circle" size={18} color={colors.tint} />
           <ThemedText style={[styles.footerText, { color: colors.icon }]}>
@@ -361,6 +408,54 @@ const styles = StyleSheet.create({
   tipDescription: {
     fontSize: 13,
     lineHeight: 18,
+  },
+  aiDisclosureCard: {
+    padding: 20,
+    borderRadius: 16,
+    borderWidth: 1,
+    gap: 16,
+  },
+  aiToolRow: {
+    flexDirection: 'row',
+    gap: 12,
+    alignItems: 'flex-start',
+  },
+  aiIconBadge: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  aiToolInfo: {
+    flex: 1,
+    gap: 4,
+  },
+  aiToolName: {
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  aiToolDescription: {
+    fontSize: 13,
+    lineHeight: 19,
+  },
+  aiDivider: {
+    height: 1,
+    marginVertical: 4,
+  },
+  aiNoteBadge: {
+    flexDirection: 'row',
+    gap: 8,
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    alignItems: 'flex-start',
+  },
+  aiNoteText: {
+    flex: 1,
+    fontSize: 12,
+    lineHeight: 17,
+    fontWeight: '500',
   },
   fontSizeControl: {
     borderWidth: 1,

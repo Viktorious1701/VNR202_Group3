@@ -10,7 +10,17 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    npm install
    ```
 
-2. Start the app
+2. **Set up Gemini AI Chatbot (Optional)**
+
+   To enable the AI chatbot with real Gemini API:
+   - Get your free API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
+   - Open `constants/gemini.ts`
+   - Replace `YOUR_GEMINI_API_KEY_HERE` with your actual API key
+   - See [GEMINI_SETUP.md](./GEMINI_SETUP.md) for detailed instructions
+
+   The chatbot will work in demo mode without an API key.
+
+3. Start the app
 
    ```bash
    npx expo start

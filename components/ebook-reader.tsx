@@ -14,7 +14,11 @@ import {
   View,
 } from 'react-native';
 import Markdown from 'react-native-markdown-display';
+import type { SharedValue } from 'react-native-reanimated';
 import Animated, {
+  Extrapolation,
+  interpolate,
+  useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -30,6 +34,7 @@ import { ThemedView } from './themed-view';
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 const AnimatedText = Animated.createAnimatedComponent(ThemedText);
+const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 
 interface ReaderPalette {
   pageBackground: string;
@@ -111,6 +116,152 @@ const TimelineViewer = memo(({
 ));
 TimelineViewer.displayName = 'TimelineViewer';
 
+interface FlipPageProps {
+  index: number;
+  width: number;
+  scrollX: SharedValue<number>;
+  pageContent: string;
+  chapter: LibraryBook['chapters'][number];
+  chapterIndex: number;
+  chaptersCount: number;
+  appliedPalette: ReaderPalette;
+  fontSize: number;
+  onMediaPress: (url: string) => void;
+}
+
+const FlipPage = memo(({
+  index,
+  width,
+  scrollX,
+  pageContent,
+  chapter,
+  chapterIndex,
+  chaptersCount,
+  appliedPalette,
+  fontSize,
+  onMediaPress,
+}: FlipPageProps) => {
+  const animatedStyle = useAnimatedStyle(() => {
+    const offset = scrollX.value / width;
+    const relativeProgress = index - offset;
+    const absProgress = Math.abs(relativeProgress);
+
+    const rotateY = interpolate(relativeProgress, [-1, 0, 1], [32, 0, -32], Extrapolation.CLAMP);
+    const translateX = interpolate(relativeProgress, [-1, 0, 1], [-width * 0.18, 0, width * 0.18], Extrapolation.CLAMP);
+    const scale = interpolate(absProgress, [0, 1.2], [1, 0.94], Extrapolation.CLAMP);
+    const elevation = interpolate(absProgress, [0, 1], [12, 3], Extrapolation.CLAMP);
+    const shadowOpacity = interpolate(absProgress, [0, 0.5, 1], [0.25, 0.16, 0.1], Extrapolation.CLAMP);
+    const shadowRadius = interpolate(absProgress, [0, 1], [16, 6], Extrapolation.CLAMP);
+    const zIndexInterpolated = interpolate(absProgress, [0, 0.6, 1.5], [8, 4, 0], Extrapolation.CLAMP);
+
+    return {
+      transform: [
+        { perspective: 1200 },
+        { rotateY: `${rotateY}deg` },
+        { translateX },
+        { scale },
+      ],
+      elevation,
+      shadowOpacity,
+      shadowRadius,
+      shadowOffset: { width: 0, height: 8 },
+      zIndex: Math.round(zIndexInterpolated),
+    };
+  }, [index, scrollX, width]);
+
+  const shadingStyle = useAnimatedStyle(() => {
+    const offset = scrollX.value / width;
+    const absProgress = Math.abs(index - offset);
+    const opacity = interpolate(absProgress, [0, 0.5, 1.2], [0.04, 0.18, 0.32], Extrapolation.CLAMP);
+
+    return { opacity };
+  }, [index, scrollX, width]);
+
+  return (
+    <AnimatedView style={[styles.pageContainer, animatedStyle]}>
+      <View style={[styles.pageSurface, { backgroundColor: appliedPalette.pageBackground }]}>
+        <ScrollView
+          style={styles.pageScrollView}
+          contentContainerStyle={styles.contentInner}
+        >
+          <View style={styles.page}>
+            <View style={styles.pageHeader}>
+              <View style={[styles.chapterTitleBadge, { backgroundColor: appliedPalette.accent + '22' }]}>
+                <ThemedText style={[styles.chapterTitle, { color: appliedPalette.accent }]}>
+                  {chapter.title}
+                </ThemedText>
+              </View>
+              <View style={styles.chapterInfoRow}>
+                <View style={[styles.infoBadge, { backgroundColor: appliedPalette.pageBackground + 'DD' }]}>
+                  <Ionicons name="document-text" size={12} color={appliedPalette.accent} />
+                  <ThemedText style={[styles.infoBadgeText, { color: appliedPalette.textColor }]}>
+                    Chương {chapterIndex + 1}/{chaptersCount}
+                  </ThemedText>
+                </View>
+                {chapter.media && (
+                  <View style={[styles.infoBadge, { backgroundColor: appliedPalette.accent + '33' }]}>
+                    <Ionicons name="images" size={12} color={appliedPalette.accent} />
+                    <ThemedText style={[styles.infoBadgeText, { color: appliedPalette.textColor }]}>
+                      Nhấn vào nội dung để xem hình ảnh
+                    </ThemedText>
+                  </View>
+                )}
+              </View>
+            </View>
+            <Markdown
+              style={{
+                body: {
+                  fontSize,
+                  lineHeight: fontSize * 1.7,
+                  color: appliedPalette.textColor,
+                },
+                heading1: {
+                  color: appliedPalette.accent,
+                  fontSize: fontSize + 6,
+                  fontWeight: 'bold',
+                  marginBottom: 12,
+                  marginTop: 16,
+                },
+                heading2: {
+                  color: appliedPalette.accent,
+                  fontSize: fontSize + 4,
+                  fontWeight: 'bold',
+                  marginBottom: 10,
+                  marginTop: 14,
+                },
+                strong: { fontWeight: 'bold' },
+                link: {
+                  color: appliedPalette.accent,
+                  textDecorationLine: 'underline',
+                  fontWeight: 'bold',
+                },
+                bullet_list: { marginVertical: 8 },
+                list_item: { marginVertical: 4 },
+              }}
+              onLinkPress={(url) => {
+                onMediaPress(url);
+                return false;
+              }}
+            >
+              {pageContent}
+            </Markdown>
+            {chapter.featuredQuote && index === 0 && (
+              <View style={[styles.quoteBox, { borderColor: appliedPalette.accent, backgroundColor: appliedPalette.pageBackground + 'CC' }]}> 
+                <Ionicons name="sparkles" size={16} color={appliedPalette.accent} />
+                <ThemedText style={[styles.quoteText, { color: appliedPalette.accent }]} numberOfLines={4}>
+                  &quot;{chapter.featuredQuote}&quot;
+                </ThemedText>
+              </View>
+            )}
+          </View>
+        </ScrollView>
+      </View>
+      <Animated.View pointerEvents="none" style={[styles.pageShadowOverlay, shadingStyle]} />
+    </AnimatedView>
+  );
+});
+FlipPage.displayName = 'FlipPage';
+
 interface EBookReaderProps {
   book: LibraryBook;
   onChapterChange?: (chapterIndex: number) => void;
@@ -123,6 +274,7 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
   const pageScrollViewRef = useRef<ScrollView>(null);
   const chapterScrollViewRef = useRef<ScrollView>(null);
   const slideTranslateX = useSharedValue(0);
+  const scrollX = useSharedValue(0);
   const insets = useSafeAreaInsets();
 
   const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
@@ -187,6 +339,10 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
     setTimeout(() => chapterScrollViewRef.current?.scrollTo({ x: newChapterIndex * 150, animated: true }), 100);
   }, [chapterIndex, book.chapters.length, animateChapterTransition]);
 
+  const onHorizontalScroll = useAnimatedScrollHandler((event) => {
+    scrollX.value = event.contentOffset.x;
+  });
+
   const goToNextPage = useCallback(() => {
     if (pageIndex < currentPages.length - 1) {
       setPageIndex(prev => prev + 1);
@@ -247,6 +403,10 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
   // Get current image to display
   const currentImage = selectedMedia?.items[currentImageIndex];
 
+  useEffect(() => {
+    scrollX.value = pageIndex * SCREEN_WIDTH;
+  }, [chapterIndex, pageIndex, scrollX]);
+
   return (
     <ThemedView style={styles.container}>
       {/* Chapter Pills */}
@@ -279,7 +439,7 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
 
       {/* Chapter Content */}
       <AnimatedView style={[styles.chapterContainer, chapterContainerAnimatedStyle]}>
-        <ScrollView
+        <AnimatedScrollView
           ref={pageScrollViewRef}
           horizontal
           pagingEnabled
@@ -287,67 +447,25 @@ export function EBookReader({ book, onChapterChange }: EBookReaderProps) {
           onMomentumScrollEnd={handlePageScroll}
           style={styles.contentContainer}
           key={chapterIndex}
+          onScroll={onHorizontalScroll}
+          scrollEventThrottle={16}
         >
           {currentPages.map((pageContent, pIndex) => (
-            <View key={`${currentChapter.id}-${pIndex}`} style={styles.pageContainer}>
-              <ScrollView
-                style={[styles.pageScrollView, { backgroundColor: appliedPalette.pageBackground }]}
-                contentContainerStyle={styles.contentInner}
-              >
-                <View style={styles.page}>
-                  <View style={styles.pageHeader}>
-                    <View style={[styles.chapterTitleBadge, { backgroundColor: appliedPalette.accent + '22' }]}>
-                      <ThemedText style={[styles.chapterTitle, { color: appliedPalette.accent }]}>
-                        {currentChapter.title}
-                      </ThemedText>
-                    </View>
-                    <View style={styles.chapterInfoRow}>
-                      <View style={[styles.infoBadge, { backgroundColor: appliedPalette.pageBackground + 'DD' }]}>
-                        <Ionicons name="document-text" size={12} color={appliedPalette.accent} />
-                        <ThemedText style={[styles.infoBadgeText, { color: appliedPalette.textColor }]}>
-                          Chương {chapterIndex + 1}/{book.chapters.length}
-                        </ThemedText>
-                      </View>
-                      {currentChapter.media && (
-                        <View style={[styles.infoBadge, { backgroundColor: appliedPalette.accent + '33' }]}>
-                          <Ionicons name="images" size={12} color={appliedPalette.accent} />
-                          <ThemedText style={[styles.infoBadgeText, { color: appliedPalette.textColor }]}>
-                            Nhấn vào nội dung để xem hình ảnh
-                          </ThemedText>
-                        </View>
-                      )}
-                    </View>
-                  </View>
-                  <Markdown
-                    style={{
-                      body: { fontSize, lineHeight: fontSize * 1.7, color: appliedPalette.textColor },
-                      heading1: { color: appliedPalette.accent, fontSize: fontSize + 6, fontWeight: 'bold', marginBottom: 12, marginTop: 16 },
-                      heading2: { color: appliedPalette.accent, fontSize: fontSize + 4, fontWeight: 'bold', marginBottom: 10, marginTop: 14 },
-                      strong: { fontWeight: 'bold' },
-                      link: { color: appliedPalette.accent, textDecorationLine: 'underline', fontWeight: 'bold' },
-                      bullet_list: { marginVertical: 8 },
-                      list_item: { marginVertical: 4 },
-                    }}
-                    onLinkPress={(url) => {
-                      handleMediaPress(url);
-                      return false;
-                    }}
-                  >
-                    {pageContent}
-                  </Markdown>
-                  {currentChapter.featuredQuote && pIndex === 0 && (
-                    <View style={[styles.quoteBox, { borderColor: appliedPalette.accent, backgroundColor: appliedPalette.pageBackground + 'CC' }]}>
-                      <Ionicons name="sparkles" size={16} color={appliedPalette.accent} />
-                      <ThemedText style={[styles.quoteText, { color: appliedPalette.accent }]} numberOfLines={4}>
-                        &quot;{currentChapter.featuredQuote}&quot;
-                      </ThemedText>
-                    </View>
-                  )}
-                </View>
-              </ScrollView>
-            </View>
+            <FlipPage
+              key={`${currentChapter.id}-${pIndex}`}
+              index={pIndex}
+              width={SCREEN_WIDTH}
+              scrollX={scrollX}
+              pageContent={pageContent}
+              chapter={currentChapter}
+              chapterIndex={chapterIndex}
+              chaptersCount={book.chapters.length}
+              appliedPalette={appliedPalette}
+              fontSize={fontSize}
+              onMediaPress={handleMediaPress}
+            />
           ))}
-        </ScrollView>
+        </AnimatedScrollView>
       </AnimatedView>
 
       {/* REDESIGNED: Simple Modal - One Image at a Time */}
@@ -488,8 +606,28 @@ const styles = StyleSheet.create({
   chapterPillText: { fontSize: 13, fontWeight: '600' },
   chapterContainer: { flex: 1 },
   contentContainer: { flex: 1 },
-  pageContainer: { width: SCREEN_WIDTH, flex: 1 },
-  // The vertical scroll view now receives the background color, simplifying the structure.
+  pageContainer: {
+    width: SCREEN_WIDTH,
+    flex: 1,
+    paddingVertical: 32,
+    paddingHorizontal: 20,
+    shadowColor: '#000',
+  },
+  pageSurface: {
+    flex: 1,
+    borderRadius: 20,
+    overflow: 'hidden',
+  },
+  pageBackground: {
+    flex: 1,
+  },
+  pageBackgroundImage: {
+    width: '100%',
+    height: '100%',
+  },
+  pageGradient: {
+    flex: 1,
+  },
   pageScrollView: {
     flex: 1,
   },
@@ -506,6 +644,12 @@ const styles = StyleSheet.create({
   infoBadgeText: { fontSize: 11, fontWeight: '600' },
   quoteBox: { borderWidth: 1, borderRadius: 12, padding: 14, flexDirection: 'row', alignItems: 'flex-start', gap: 8, marginTop: 20 },
   quoteText: { fontSize: 13, fontStyle: 'italic', flex: 1 },
+  pageShadowOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#000',
+    opacity: 0,
+    borderRadius: 20,
+  },
   footer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 14, borderTopWidth: 1 },
   navButton: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 8, paddingHorizontal: 4 },
   navText: { fontSize: 14, fontWeight: '600' },
