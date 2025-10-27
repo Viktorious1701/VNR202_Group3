@@ -323,7 +323,7 @@ Nếu câu hỏi không liên quan đến Việt Nam Dân Chủ Cộng Hòa, hã
               style={[styles.input, { color: colors.text }]}
               value={inputText}
               onChangeText={setInputText}
-              placeholder="Hỏi về lịch sử VNCH..."
+              placeholder="Hỏi về lịch sử..."
               placeholderTextColor={colors.icon}
               multiline
               maxLength={500}
