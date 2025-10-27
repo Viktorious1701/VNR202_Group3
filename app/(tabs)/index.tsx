@@ -1,3 +1,4 @@
+// VNR202_Group3/app/(tabs)/index.tsx
 import { BookShelf } from '@/components/book-shelf';
 import { EBookReader } from '@/components/ebook-reader';
 import { HeritageBanner } from '@/components/heritage-banner';
@@ -9,6 +10,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useReaderPreferences } from '@/hooks/use-reader-preferences';
 import type { LibraryBook } from '@/types/library';
 import { Ionicons } from '@expo/vector-icons';
+import { AVPlaybackStatusSuccess, ResizeMode, Video } from 'expo-av';
 import { useNavigation } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -55,6 +57,9 @@ const archiveSpotlight = {
 };
 
 export default function HomeScreen() {
+  const [showIntro, setShowIntro] = useState(true);
+  const [isMuted, setIsMuted] = useState(true); // Start muted for web autoplay compatibility
+  const [videoAspectRatio, setVideoAspectRatio] = useState(16 / 9);
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const insets = useSafeAreaInsets();
@@ -64,14 +69,13 @@ export default function HomeScreen() {
   const [activeBookId, setActiveBookId] = useState<string | null>(null);
   const [activeChapterIndex, setActiveChapterIndex] = useState(0);
 
-  // Hide/show tab bar based on reading state
   useEffect(() => {
     navigation.setOptions({
       tabBarStyle: {
-        display: isReading ? 'none' : 'flex',
+        display: isReading || showIntro ? 'none' : 'flex',
       },
     });
-  }, [isReading, navigation]);
+  }, [isReading, showIntro, navigation]);
 
   const highlightedBook = libraryBooks[0];
   const continueReading = useMemo(
@@ -108,6 +112,52 @@ export default function HomeScreen() {
     setActiveBookId(null);
   };
 
+ if (showIntro) {
+  return (
+    <View style={styles.introContainer}>
+      <Video
+        source={require('@/assets/video/Intro.mp4')}
+        rate={1.0}
+        volume={1.0}
+        isMuted={isMuted}
+        resizeMode={ResizeMode.CONTAIN}
+        shouldPlay
+        isLooping
+        style={styles.video}
+      />
+      
+      <TouchableOpacity 
+        style={styles.muteButton} 
+        onPress={() => setIsMuted(!isMuted)}
+      >
+        <Ionicons 
+          name={isMuted ? 'volume-mute' : 'volume-high'} 
+          size={24} 
+          color="white" 
+        />
+      </TouchableOpacity>
+
+      <View style={styles.introOverlay}>
+        <ThemedText type="title" style={styles.introTitle}>
+          Di Sản Việt Nam Dân Chủ Cộng Hòa
+        </ThemedText>
+        <ThemedText style={styles.introSubtitle}>
+          Khám phá lịch sử qua tư liệu và hình ảnh
+        </ThemedText>
+        <TouchableOpacity
+          style={[styles.introButton, { backgroundColor: colors.tint }]}
+          onPress={() => setShowIntro(false)}
+        >
+          <ThemedText style={[styles.introButtonText, { color: colors.background }]}>
+            Vào Thư Viện
+          </ThemedText>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+
   if (isReading && currentBook) {
     return (
       <ThemedView style={styles.container}>
@@ -119,23 +169,20 @@ export default function HomeScreen() {
               borderBottomColor: colors.border,
               paddingTop: insets.top + 12,
             },
-          ]}
-        >
+          ]}>
           <TouchableOpacity onPress={handleBackToLibrary} style={styles.readerBackButton}>
             <Ionicons name="arrow-back" size={22} color={colors.text} />
             <ThemedText style={styles.readerBackText}>Trở về thư viện</ThemedText>
           </TouchableOpacity>
           <View style={styles.readerMeta}>
             <ThemedText style={styles.readerBook}>{currentBook.title}</ThemedText>
-            <ThemedText style={[styles.readerMetaLine, { color: colors.icon }]}> 
-              Chương {activeChapterIndex + 1}/{currentBook.chapters.length} • Chế độ {themeLabelMap[readerTheme]}
+            <ThemedText style={[styles.readerMetaLine, { color: colors.icon }]}>
+              Chương {activeChapterIndex + 1}/{currentBook.chapters.length} • Chế độ{' '}
+              {themeLabelMap[readerTheme]}
             </ThemedText>
           </View>
         </View>
-        <EBookReader
-          book={currentBook}
-          onChapterChange={setActiveChapterIndex}
-        />
+        <EBookReader book={currentBook} onChapterChange={setActiveChapterIndex} />
       </ThemedView>
     );
   }
@@ -145,8 +192,7 @@ export default function HomeScreen() {
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 16 }]}
-        showsVerticalScrollIndicator={false}
-      >
+        showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
           <HeritageBanner
             title="Thư Viện Việt Nam Dân Chủ Cộng Hòa"
@@ -165,23 +211,33 @@ export default function HomeScreen() {
           {continueReading.length > 0 && (
             <View style={styles.section}>
               <View style={styles.sectionHeaderRow}>
-                <ThemedText type="subtitle" style={styles.sectionTitle}>Đang đọc dở</ThemedText>
-                <ThemedText style={[styles.sectionHint, { color: colors.icon }]}>Tiếp tục hành trình còn dang dở</ThemedText>
+                <ThemedText type="subtitle" style={styles.sectionTitle}>
+                  Đang đọc dở
+                </ThemedText>
+                <ThemedText style={[styles.sectionHint, { color: colors.icon }]}>
+                  Tiếp tục hành trình còn dang dở
+                </ThemedText>
               </View>
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.continueRow}
-              >
+                contentContainerStyle={styles.continueRow}>
                 {continueReading.map((book) => (
-                  <ContinueReadingCard key={book.id} book={book} colors={colors} onPress={handleBookPress} />
+                  <ContinueReadingCard
+                    key={book.id}
+                    book={book}
+                    colors={colors}
+                    onPress={handleBookPress}
+                  />
                 ))}
               </ScrollView>
             </View>
           )}
 
           {libraryShelves.map((shelf) => {
-            const shelfBooks = libraryBooks.filter((book) => shelf.categories.includes(book.category));
+            const shelfBooks = libraryBooks.filter((book) =>
+              shelf.categories.includes(book.category),
+            );
             if (shelfBooks.length === 0) {
               return null;
             }
@@ -197,10 +253,16 @@ export default function HomeScreen() {
             );
           })}
 
-          <ThemedView style={[styles.archiveCard, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}>
+          <ThemedView
+            style={[
+              styles.archiveCard,
+              { backgroundColor: colors.cardBackground, borderColor: colors.border },
+            ]}>
             <View style={styles.archiveHeader}>
               <Ionicons name="archive" size={22} color={colors.tint} />
-              <ThemedText type="subtitle" style={styles.archiveTitle}>{archiveSpotlight.title}</ThemedText>
+              <ThemedText type="subtitle" style={styles.archiveTitle}>
+                {archiveSpotlight.title}
+              </ThemedText>
             </View>
             <ThemedText style={[styles.archiveDescription, { color: colors.icon }]}>
               {archiveSpotlight.description}
@@ -231,7 +293,12 @@ interface ContinueReadingCardProps {
 function ContinueReadingCard({ book, colors, onPress }: ContinueReadingCardProps) {
   const progress = book.progress ?? 0;
   return (
-    <TouchableOpacity style={[styles.continueCard, { backgroundColor: colors.cardBackground, borderColor: colors.border }]} onPress={() => onPress(book)}>
+    <TouchableOpacity
+      style={[
+        styles.continueCard,
+        { backgroundColor: colors.cardBackground, borderColor: colors.border },
+      ]}
+      onPress={() => onPress(book)}>
       <View style={[styles.continueFlag, { backgroundColor: book.accentColor ?? colors.accent }]}>
         <View style={[styles.continueStripe, { backgroundColor: book.coverColor ?? colors.tint }]} />
       </View>
@@ -245,7 +312,12 @@ function ContinueReadingCard({ book, colors, onPress }: ContinueReadingCardProps
       </View>
       <View style={styles.continueProgress}>
         <View style={[styles.continueBar, { backgroundColor: colors.border }]}>
-          <View style={[styles.continueFill, { width: `${progress}%`, backgroundColor: book.accentColor ?? colors.tint }]} />
+          <View
+            style={[
+              styles.continueFill,
+              { width: `${progress}%`, backgroundColor: book.accentColor ?? colors.tint },
+            ]}
+          />
         </View>
         <ThemedText style={styles.continuePercent}>{progress}%</ThemedText>
       </View>
@@ -254,6 +326,65 @@ function ContinueReadingCard({ book, colors, onPress }: ContinueReadingCardProps
 }
 
 const styles = StyleSheet.create({
+  introContainer: {
+    flex: 1,
+    backgroundColor: '#000',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  video: {
+    width: '100%',
+    height: '100%',
+  },
+  muteButton: {
+    position: 'absolute',
+    top: 50,
+    right: 20,
+    padding: 12,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    borderRadius: 30,
+    zIndex: 10,
+  },
+  introOverlay: {
+    position: 'absolute',
+    bottom: 80,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  introTitle: {
+    color: '#FFFFFF',
+    textAlign: 'center',
+    marginBottom: 12,
+    textShadowColor: 'rgba(0, 0, 0, 0.8)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+  },
+  introSubtitle: {
+    fontSize: 16,
+    color: 'rgba(255,255,255,0.95)',
+    textAlign: 'center',
+    marginBottom: 24,
+    textShadowColor: 'rgba(0, 0, 0, 0.8)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+  },
+  introButton: {
+    paddingVertical: 14,
+    paddingHorizontal: 32,
+    borderRadius: 999,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 8,
+  },
+  introButtonText: {
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  // --- Existing styles ---
   container: {
     flex: 1,
   },
