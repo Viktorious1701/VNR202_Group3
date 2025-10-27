@@ -62,7 +62,7 @@ export default function ChatScreen() {
     {
       id: '1',
       text: isApiKeyValid 
-        ? 'Xin chào! Tôi là trợ lý AI của ứng dụng Di Sản Việt Nam Cộng Hòa. Tôi có thể giúp bạn tìm hiểu về lịch sử, văn hóa, và các sự kiện quan trọng của Việt Nam Cộng Hòa (1955-1975). Bạn muốn hỏi gì?'
+        ? 'Xin chào! Tôi là trợ lý AI của ứng dụng Di Sản Việt Nam Dân Chủ Cộng Hòa. Tôi có thể giúp bạn tìm hiểu về lịch sử, văn hóa, và các sự kiện quan trọng của Việt Nam Dân Chủ Cộng Hòa (1955-1975). Bạn muốn hỏi gì?'
         : 'Xin chào! Tôi đang chạy ở chế độ demo. Để sử dụng AI thật với Gemini, vui lòng thêm API key vào file constants/gemini.ts. Lấy API key miễn phí tại: https://makersuite.google.com/app/apikey',
       isUser: false,
       timestamp: new Date(),
@@ -130,11 +130,11 @@ export default function ChatScreen() {
 
     const model = genAI.current.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
-    const systemPrompt = `Bạn là một trợ lý AI chuyên về lịch sử Việt Nam Cộng Hòa (1955-1975). 
+    const systemPrompt = `Bạn là một trợ lý AI chuyên về lịch sử Việt Nam Dân Chủ Cộng Hòa (1955-1975). 
 Hãy trả lời các câu hỏi một cách chính xác, khách quan và có cơ sở lịch sử.
 Tập trung vào các sự kiện, nhân vật, văn hóa và đời sống xã hội trong thời kỳ này.
 Trả lời bằng tiếng Việt, ngắn gọn (2-4 câu) nhưng đầy đủ thông tin.
-Nếu câu hỏi không liên quan đến Việt Nam Cộng Hòa, hãy lịch sự hướng người dùng về chủ đề này.`;
+Nếu câu hỏi không liên quan đến Việt Nam Dân Chủ Cộng Hòa, hãy lịch sự hướng người dùng về chủ đề này.`;
 
     const prompt = `${systemPrompt}\n\nCâu hỏi: ${query}\n\nTrả lời:`;
 
@@ -150,15 +150,15 @@ Nếu câu hỏi không liên quan đến Việt Nam Cộng Hòa, hãy lịch s�
     const lowerQuery = query.toLowerCase();
     
     if (lowerQuery.includes('ngô đình diệm') || lowerQuery.includes('ngo dinh diem')) {
-      return 'Ngô Đình Diệm là Tổng thống đầu tiên của Việt Nam Cộng Hòa (1955-1963). Ông đã đóng vai trò quan trọng trong việc xây dựng chính quyền mới sau Hiệp định Geneva 1954. Tuy nhiên, chính quyền của ông cũng gặp nhiều tranh cãi do các chính sách độc đoán và đàn áp đối lập.';
+      return 'Ngô Đình Diệm là Tổng thống đầu tiên của Việt Nam Dân Chủ Cộng Hòa (1955-1963). Ông đã đóng vai trò quan trọng trong việc xây dựng chính quyền mới sau Hiệp định Geneva 1954. Tuy nhiên, chính quyền của ông cũng gặp nhiều tranh cãi do các chính sách độc đoán và đàn áp đối lập.';
     }
     
     if (lowerQuery.includes('hiệp định geneva') || lowerQuery.includes('1954')) {
-      return 'Hiệp định Geneva 1954 được ký kết ngày 21/7/1954, kết thúc cuộc chiến tranh Đông Dương lần thứ nhất. Hiệp định này chia đất nước tạm thời tại vĩ tuyến 17, với miền Bắc do chính quyền Việt Nam Dân chủ Cộng hòa quản lý và miền Nam do Quốc gia Việt Nam (sau này là Việt Nam Cộng Hòa) quản lý.';
+      return 'Hiệp định Geneva 1954 được ký kết ngày 21/7/1954, kết thúc cuộc chiến tranh Đông Dương lần thứ nhất. Hiệp định này chia đất nước tạm thời tại vĩ tuyến 17, với miền Bắc do chính quyền Việt Nam Dân chủ Cộng hòa quản lý và miền Nam do Quốc gia Việt Nam (sau này là Việt Nam Dân Chủ Cộng Hòa) quản lý.';
     }
     
     if (lowerQuery.includes('sài gòn') || lowerQuery.includes('saigon')) {
-      return 'Sài Gòn là thủ đô của Việt Nam Cộng Hòa từ 1955-1975. Thành phố này là trung tâm chính trị, kinh tế, văn hóa quan trọng, được mệnh danh là "Hòn ngọc Viễn Đông". Sài Gòn có nhiều công trình kiến trúc độc đáo kết hợp giữa phong cách Pháp và bản địa.';
+      return 'Sài Gòn là thủ đô của Việt Nam Dân Chủ Cộng Hòa từ 1955-1975. Thành phố này là trung tâm chính trị, kinh tế, văn hóa quan trọng, được mệnh danh là "Hòn ngọc Viễn Đông". Sài Gòn có nhiều công trình kiến trúc độc đáo kết hợp giữa phong cách Pháp và bản địa.';
     }
     
     if (lowerQuery.includes('tết mậu thân') || lowerQuery.includes('1968')) {
@@ -166,23 +166,23 @@ Nếu câu hỏi không liên quan đến Việt Nam Cộng Hòa, hãy lịch s�
     }
     
     if (lowerQuery.includes('30/4') || lowerQuery.includes('30 tháng 4') || lowerQuery.includes('1975')) {
-      return 'Ngày 30/4/1975 đánh dấu sự kết thúc của Việt Nam Cộng Hòa với chiến dịch Hồ Chí Minh. Đây là sự kiện lịch sử quan trọng kết thúc 20 năm chia cắt đất nước, mở ra giai đoạn thống nhất và xây dựng đất nước.';
+      return 'Ngày 30/4/1975 đánh dấu sự kết thúc của Việt Nam Dân Chủ Cộng Hòa với chiến dịch Hồ Chí Minh. Đây là sự kiện lịch sử quan trọng kết thúc 20 năm chia cắt đất nước, mở ra giai đoạn thống nhất và xây dựng đất nước.';
     }
     
     if (lowerQuery.includes('văn hóa') || lowerQuery.includes('culture')) {
-      return 'Văn hóa Việt Nam Cộng Hòa thời kỳ 1955-1975 rất đa dạng và phong phú. Sài Gòn là trung tâm văn hóa sôi động với nhiều nhà hát, rạp chiếu phim, câu lạc bộ âm nhạc. Âm nhạc trữ tình, nhạc vàng, và nghệ thuật điện ảnh đã phát triển mạnh mẽ trong thời kỳ này.';
+      return 'Văn hóa Việt Nam Dân Chủ Cộng Hòa thời kỳ 1955-1975 rất đa dạng và phong phú. Sài Gòn là trung tâm văn hóa sôi động với nhiều nhà hát, rạp chiếu phim, câu lạc bộ âm nhạc. Âm nhạc trữ tình, nhạc vàng, và nghệ thuật điện ảnh đã phát triển mạnh mẽ trong thời kỳ này.';
     }
     
     if (lowerQuery.includes('giáo dục') || lowerQuery.includes('education')) {
-      return 'Hệ thống giáo dục Việt Nam Cộng Hòa được xây dựng theo mô hình Pháp-Mỹ với nhiều trường đại học danh tiếng như Đại học Văn khoa Sài Gòn, Đại học Y khoa, Đại học Luật khoa. Giáo dục được chú trọng đầu tư và phát triển.';
+      return 'Hệ thống giáo dục Việt Nam Dân Chủ Cộng Hòa được xây dựng theo mô hình Pháp-Mỹ với nhiều trường đại học danh tiếng như Đại học Văn khoa Sài Gòn, Đại học Y khoa, Đại học Luật khoa. Giáo dục được chú trọng đầu tư và phát triển.';
     }
 
     if (lowerQuery.includes('kinh tế') || lowerQuery.includes('economy')) {
-      return 'Kinh tế Việt Nam Cộng Hòa chủ yếu dựa vào nông nghiệp, thương mại và dịch vụ. Sài Gòn là trung tâm kinh tế lớn với nhiều doanh nghiệp, ngân hàng và thị trường sôi động. Miền Nam cũng nhận được viện trợ kinh tế đáng kể từ Hoa Kỳ.';
+      return 'Kinh tế Việt Nam Dân Chủ Cộng Hòa chủ yếu dựa vào nông nghiệp, thương mại và dịch vụ. Sài Gòn là trung tâm kinh tế lớn với nhiều doanh nghiệp, ngân hàng và thị trường sôi động. Miền Nam cũng nhận được viện trợ kinh tế đáng kể từ Hoa Kỳ.';
     }
     
     // Default response
-    return 'Cảm ơn câu hỏi của bạn! Tôi có thể giúp bạn tìm hiểu về nhiều chủ đề liên quan đến Việt Nam Cộng Hòa như: lịch sử chính trị (Ngô Đình Diệm, Hiệp định Geneva), các sự kiện quan trọng (Tết Mậu Thân 1968, 30/4/1975), văn hóa, giáo dục, và kinh tế. Bạn muốn tìm hiểu về chủ đề nào cụ thể?';
+    return 'Cảm ơn câu hỏi của bạn! Tôi có thể giúp bạn tìm hiểu về nhiều chủ đề liên quan đến Việt Nam Dân Chủ Cộng Hòa như: lịch sử chính trị (Ngô Đình Diệm, Hiệp định Geneva), các sự kiện quan trọng (Tết Mậu Thân 1968, 30/4/1975), văn hóa, giáo dục, và kinh tế. Bạn muốn tìm hiểu về chủ đề nào cụ thể?';
   };
 
   const suggestedQuestions = [
@@ -225,7 +225,7 @@ Nếu câu hỏi không liên quan đến Việt Nam Cộng Hòa, hãy lịch s�
               )}
             </View>
             <ThemedText style={[styles.headerSubtitle, { color: colors.icon }]}>
-              {isApiKeyValid ? 'Powered by Gemini 2.5 Flash' : 'Hỏi đáp về lịch sử Việt Nam Cộng Hòa'}
+              {isApiKeyValid ? 'Powered by Gemini 2.5 Flash' : 'Hỏi đáp về lịch sử Việt Nam Dân Chủ Cộng Hòa'}
             </ThemedText>
           </View>
         </View>
