@@ -197,50 +197,115 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-        {/* AI Disclosure Section */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <ThemedText type="subtitle" style={styles.sectionTitle}>
-              Công cụ AI được sử dụng
-            </ThemedText>
-            <ThemedText style={[styles.sectionHint, { color: colors.icon }]}>
-              Ứng dụng này được xây dựng với sự hỗ trợ của AI
-            </ThemedText>
-          </View>
-
-          <View style={[styles.aiDisclosureCard, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}>
-            <View style={styles.aiToolRow}>
-              <View style={[styles.aiIconBadge, { backgroundColor: '#E97451' + '22' }]}>
-                <Ionicons name="sparkles" size={20} color="#E97451" />
-              </View>
-              <View style={styles.aiToolInfo}>
-                <ThemedText style={styles.aiToolName}>Claude (Anthropic)</ThemedText>
-                <ThemedText style={[styles.aiToolDescription, { color: colors.icon }]}>
-                  Lập trình giao diện, kiến trúc ứng dụng, và tối ưu hóa trải nghiệm người dùng
-                </ThemedText>
-              </View>
+        {/* AI Disclosure Section - Enhanced */}
+        <View style={[styles.aiDisclosureSection, { backgroundColor: colors.tint + '08', borderColor: colors.tint + '30' }]}>
+          <View style={styles.aiHeaderBanner}>
+            <View style={[styles.aiHeaderIconBadge, { backgroundColor: colors.tint }]}>
+              <Ionicons name="sparkles" size={26} color={colors.background} />
             </View>
-
-            <View style={[styles.aiDivider, { backgroundColor: colors.border }]} />
-
-            <View style={styles.aiToolRow}>
-              <View style={[styles.aiIconBadge, { backgroundColor: '#4285F4' + '22' }]}>
-                <Ionicons name="planet" size={20} color="#4285F4" />
-              </View>
-              <View style={styles.aiToolInfo}>
-                <ThemedText style={styles.aiToolName}>Gemini (Google)</ThemedText>
-                <ThemedText style={[styles.aiToolDescription, { color: colors.icon }]}>
-                  Hỗ trợ nội dung, cấu trúc dữ liệu, và tư vấn thiết kế tính năng
-                </ThemedText>
-              </View>
-            </View>
-
-            <View style={[styles.aiNoteBadge, { backgroundColor: colors.tint + '15', borderColor: colors.tint + '40' }]}>
-              <Ionicons name="information-circle-outline" size={16} color={colors.tint} />
-              <ThemedText style={[styles.aiNoteText, { color: colors.tint }]}>
-                Tất cả nội dung lịch sử và văn hóa đã được xác minh và biên tập bởi con người
+            <View style={styles.aiHeaderText}>
+              <ThemedText type="subtitle" style={styles.aiHeaderTitle}>
+                Công khai về AI
+              </ThemedText>
+              <ThemedText style={[styles.aiHeaderSubtitle, { color: colors.icon }]}>
+                Ứng dụng này được phát triển với sự hỗ trợ của trí tuệ nhân tạo
               </ThemedText>
             </View>
+          </View>
+
+          <View style={[styles.aiToolsContainer, { backgroundColor: colors.cardBackground }]}>
+            <ThemedText style={[styles.aiToolsLabel, { color: colors.icon }]}>
+              CÁC CÔNG CỤ AI ĐƯỢC SỬ DỤNG
+            </ThemedText>
+
+            <View style={styles.aiToolCard}>
+              <View style={styles.aiToolHeader}>
+                <View style={[styles.aiToolIconLarge, { backgroundColor: '#E97451' + '20' }]}>
+                  <Ionicons name="sparkles" size={28} color="#E97451" />
+                </View>
+                <View style={styles.aiToolTitleBlock}>
+                  <ThemedText style={styles.aiToolNameLarge}>Claude</ThemedText>
+                  <ThemedText style={[styles.aiToolProvider, { color: colors.icon }]}>
+                    by Anthropic
+                  </ThemedText>
+                </View>
+              </View>
+              <View style={[styles.aiToolDivider, { backgroundColor: colors.border }]} />
+              <View style={styles.aiToolDetails}>
+                <View style={styles.aiToolDetailRow}>
+                  <Ionicons name="code-slash" size={16} color={colors.tint} />
+                  <ThemedText style={[styles.aiToolDetailText, { color: colors.text }]}>
+                    Lập trình giao diện và kiến trúc ứng dụng
+                  </ThemedText>
+                </View>
+                <View style={styles.aiToolDetailRow}>
+                  <Ionicons name="color-wand" size={16} color={colors.tint} />
+                  <ThemedText style={[styles.aiToolDetailText, { color: colors.text }]}>
+                    Tối ưu hóa trải nghiệm người dùng (UX)
+                  </ThemedText>
+                </View>
+                <View style={styles.aiToolDetailRow}>
+                  <Ionicons name="construct" size={16} color={colors.tint} />
+                  <ThemedText style={[styles.aiToolDetailText, { color: colors.text }]}>
+                    Thiết kế và cấu trúc codebase
+                  </ThemedText>
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.aiToolCard}>
+              <View style={styles.aiToolHeader}>
+                <View style={[styles.aiToolIconLarge, { backgroundColor: '#4285F4' + '20' }]}>
+                  <Ionicons name="planet" size={28} color="#4285F4" />
+                </View>
+                <View style={styles.aiToolTitleBlock}>
+                  <ThemedText style={styles.aiToolNameLarge}>Gemini</ThemedText>
+                  <ThemedText style={[styles.aiToolProvider, { color: colors.icon }]}>
+                    by Google
+                  </ThemedText>
+                </View>
+              </View>
+              <View style={[styles.aiToolDivider, { backgroundColor: colors.border }]} />
+              <View style={styles.aiToolDetails}>
+                <View style={styles.aiToolDetailRow}>
+                  <Ionicons name="chatbubbles" size={16} color={colors.tint} />
+                  <ThemedText style={[styles.aiToolDetailText, { color: colors.text }]}>
+                    Trợ lý AI trong ứng dụng (tab Trợ lý AI)
+                  </ThemedText>
+                </View>
+                <View style={styles.aiToolDetailRow}>
+                  <Ionicons name="document-text" size={16} color={colors.tint} />
+                  <ThemedText style={[styles.aiToolDetailText, { color: colors.text }]}>
+                    Hỗ trợ cấu trúc nội dung và dữ liệu
+                  </ThemedText>
+                </View>
+                <View style={styles.aiToolDetailRow}>
+                  <Ionicons name="bulb" size={16} color={colors.tint} />
+                  <ThemedText style={[styles.aiToolDetailText, { color: colors.text }]}>
+                    Tư vấn thiết kế tính năng
+                  </ThemedText>
+                </View>
+              </View>
+            </View>
+          </View>
+
+          <View style={[styles.aiVerificationBanner, { backgroundColor: colors.tint + '15', borderColor: colors.tint }]}>
+            <Ionicons name="shield-checkmark" size={22} color={colors.tint} />
+            <View style={styles.aiVerificationText}>
+              <ThemedText style={[styles.aiVerificationTitle, { color: colors.tint }]}>
+                Đảm bảo chất lượng nội dung
+              </ThemedText>
+              <ThemedText style={[styles.aiVerificationDescription, { color: colors.tint }]}>
+                Tất cả nội dung lịch sử và văn hóa đã được xác minh, kiểm tra và biên tập cẩn thận bởi con người. AI chỉ đóng vai trò hỗ trợ kỹ thuật, không tự động tạo nội dung học thuật.
+              </ThemedText>
+            </View>
+          </View>
+
+          <View style={[styles.aiTransparencyNote, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}>
+            <Ionicons name="information-circle" size={18} color={colors.icon} />
+            <ThemedText style={[styles.aiTransparencyText, { color: colors.icon }]}>
+              Chúng tôi tin tưởng vào tính minh bạch. Ứng dụng này được xây dựng nhờ sự kết hợp giữa công nghệ AI tiên tiến và chuyên môn của con người để mang đến trải nghiệm học tập tốt nhất.
+            </ThemedText>
           </View>
         </View>
 
