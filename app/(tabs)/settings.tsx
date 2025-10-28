@@ -474,6 +474,127 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 18,
   },
+  // Enhanced AI Disclosure Styles
+  aiDisclosureSection: {
+    padding: 20,
+    borderRadius: 20,
+    borderWidth: 2,
+    gap: 20,
+  },
+  aiHeaderBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
+  aiHeaderIconBadge: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  aiHeaderText: {
+    flex: 1,
+    gap: 4,
+  },
+  aiHeaderTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+  },
+  aiHeaderSubtitle: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  aiToolsContainer: {
+    padding: 20,
+    borderRadius: 16,
+    gap: 20,
+  },
+  aiToolsLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
+  aiToolCard: {
+    gap: 16,
+  },
+  aiToolHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
+  aiToolIconLarge: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  aiToolTitleBlock: {
+    flex: 1,
+    gap: 2,
+  },
+  aiToolNameLarge: {
+    fontSize: 20,
+    fontWeight: '700',
+  },
+  aiToolProvider: {
+    fontSize: 13,
+    fontStyle: 'italic',
+  },
+  aiToolDivider: {
+    height: 1,
+    marginHorizontal: 0,
+  },
+  aiToolDetails: {
+    gap: 12,
+    paddingLeft: 4,
+  },
+  aiToolDetailRow: {
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'flex-start',
+  },
+  aiToolDetailText: {
+    flex: 1,
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  aiVerificationBanner: {
+    flexDirection: 'row',
+    gap: 12,
+    padding: 16,
+    borderRadius: 14,
+    borderWidth: 2,
+    alignItems: 'flex-start',
+  },
+  aiVerificationText: {
+    flex: 1,
+    gap: 6,
+  },
+  aiVerificationTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  aiVerificationDescription: {
+    fontSize: 13,
+    lineHeight: 19,
+  },
+  aiTransparencyNote: {
+    flexDirection: 'row',
+    gap: 10,
+    padding: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    alignItems: 'flex-start',
+  },
+  aiTransparencyText: {
+    flex: 1,
+    fontSize: 13,
+    lineHeight: 19,
+  },
+  // Old AI styles (kept for backwards compatibility if needed)
   aiDisclosureCard: {
     padding: 20,
     borderRadius: 16,
